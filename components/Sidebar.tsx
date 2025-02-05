@@ -19,7 +19,7 @@ const Sidebar = () => {
   if (isLoginPage) return null; // Don't render Sidebar on the login page
 
   return (
-    <div className={` fixed top-0 left-0 h-full bg-white rounded-r-lg shadow-lg w-96  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-60' : 'w-16'}`}>
+    <div className={` fixed top-0 left-0 h-full bg-white rounded-r-lg shadow-lg  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-64' : 'w-16'}`}>
       <div className=" text-xl font-bold mb-6 flex items-center justify-between mt-4">
         <h2 className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Shop.Co</h2>
         <div className=" cursor-pointer text-2xl " onClick={toggleSidebar}>
