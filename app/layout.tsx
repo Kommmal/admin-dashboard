@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import LoginForm from "@/components/LoginForm";
 
 
 
@@ -31,9 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        
-        <Sidebar />
+        <div className="w-full">
+        <Sidebar  />
+        <div className="w-auto ml-16">
         {children}
+        </div>
+        </div>
+        
       </body>
     </html>
   );

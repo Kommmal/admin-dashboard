@@ -1,4 +1,4 @@
-import { defineType } from "sanity"
+import { defineType } from "sanity";
 
 export default defineType({
     name: 'products',
@@ -6,84 +6,89 @@ export default defineType({
     type: 'document',
     fields: [
         {
-        name: 'name',
-        title: 'Name',
-        type: 'string',
-        },
-        {
-        name: 'price',
-        title: 'Price',
-        type: 'number',
-    },
-    {
-        name: 'slug',
-        type: 'slug',
-        title: 'Product Slug',
-        options: {
-            source: 'name',
-          }
-        
-      },
-        {
-        name: 'description',
-        title: 'Description',
-        type: 'text',
-        },
-        {
-        name: 'image',
-        title: 'Image',
-        type: 'image',
-        },
-        {
-            name:"category",
-            title:"Category",
+            name: 'name',
+            title: 'Name',
             type: 'string',
-            options:{
-                list:[
-                   {title: 'T-Shirt', value: 'tshirt'},
-                   {title: 'Short', value: 'short'}, 
-                   {title: 'Jeans', value: 'jeans'} ,
-                   {title: 'Hoddie', value: 'hoodie'} ,
-                   {title: 'Shirt', value: 'shirt'} ,
-                ]
-            }
         },
         {
-            name:"tags",
-            title:"Tags",
-            type: 'string',
-            options:{
-                list:[
-                   {title: 'NewArrivals', value: 'newarrivals'},
-                   {title: 'TopSelling', value: 'topselling'}, 
-                ]
-            }
-        },
-        {
-            name:"discountPercent",
-            title:"Discount Percent",
+            name: 'price',
+            title: 'Price',
             type: 'number',
         },
         {
-            name:"new",
+            name: 'slug',
+            type: 'slug',
+            title: 'Product Slug',
+            options: {
+                source: 'name',
+            },
+        },
+        {
+            name: 'description',
+            title: 'Description',
+            type: 'text',
+        },
+        {
+            name: 'image',
+            title: 'Image',
+            type: 'image',
+        },
+        {
+            name: "category",
+            title: "Category",
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'T-Shirt', value: 'tshirt' },
+                    { title: 'Short', value: 'short' },
+                    { title: 'Jeans', value: 'jeans' },
+                    { title: 'Hoodie', value: 'hoodie' },
+                    { title: 'Shirt', value: 'shirt' },
+                ]
+            }
+        },
+        {
+            name: "tags",
+            title: "Tags",
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'NewArrivals', value: 'newarrivals' },
+                    { title: 'TopSelling', value: 'topselling' },
+                    { title: 'BestSelling', value: 'bestselling' },
+                ]
+            }
+        },
+        {
+            name: "discountPercent",
+            title: "Discount Percent",
+            type: 'number',
+        },
+        {
+            name: "new",
             type: 'boolean',
-            title:"New",
+            title: "New",
         },
         {
-            name:"colors",
-            title:"Colors",
+            name: "colors",
+            title: "Colors",
             type: 'array',
-            of:[
-                {type: 'string'}
+            of: [
+                { type: 'string' }
             ]
         },
         {
-            name:"sizes",
-            title:"Sizes",
+            name: "sizes",
+            title: "Sizes",
             type: 'array',
-            of:[
-                {type: 'string'}
+            of: [
+                { type: 'string' }
             ]
+        },
+        {
+            name: "stock",
+            title: "Stock",
+            type: 'number',
         }
     ],
-})
+});

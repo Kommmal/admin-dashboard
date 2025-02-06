@@ -1,75 +1,214 @@
-import React from 'react';
-import Link from 'next/link';
+"use client";
+import React, { useState, useEffect } from 'react';
+import { client } from "@/sanity/lib/client";
 import { ChevronDownIcon, Eye, Pencil, Trash } from "lucide-react";
+import Image from 'next/image';
+import Link from 'next/link';
 
-const products = [
-  { id: 1, name: "Handmade Pouch", sku: "302012", category: "Bag & Pouch", stock: 10, price: "$121.00", status: "Low Stock", added: "29 Dec 2022" },
-  { id: 2, name: "Smartwatch E2", sku: "302011", category: "Watch", stock: 204, price: "$590.00", status: "Published", added: "24 Dec 2022" },
-  { id: 3, name: "Smartwatch E1", sku: "302002", category: "Watch", stock: 48, price: "$125.00", status: "Draft", added: "12 Dec 2022" },
-  { id: 4, name: "Headphone G1 Pro", sku: "301901", category: "Audio", stock: 401, price: "$348.00", status: "Published", added: "21 Oct 2022" },
-  { id: 5, name: "Iphone X", sku: "301900", category: "Smartphone", stock: 120, price: "$607.00", status: "Published", added: "21 Oct 2022" },
-  { id: 6, name: "Puma Shoes", sku: "301881", category: "Shoes", stock: 432, price: "$234.00", status: "Published", added: "21 Oct 2022" },
-  { id: 7, name: "Imac 2021", sku: "301643", category: "PC Desktop", stock: 0, price: "$760.00", status: "Out of Stock", added: "19 Sep 2022" },
-];
+interface Product {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  tags: string[];
+  isNew: boolean;
+  _createdAt: string;
+  image: string;
+  sku: string;
+  stock: number;
+  status: string;
+}
 
-const Products = () => {
+const ProductTable = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterStock, setFilterStock] = useState<string>("");
+  const [filterPrice, setFilterPrice] = useState<number | null>(null);
+  const [filterDateRange, setFilterDateRange] = useState<string>("");
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const productsPerPage: number = 10;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const query = `*[_type == "products"]{
+        _id,
+        name,
+        "image": image.asset->url,
+        category,
+        _createdAt,
+        tags,
+        price,
+        isNew,
+        sku,
+        stock,
+        status
+      }`;
+      const result = await client.fetch(query);
+      setProducts(result);
+    };
+    fetchData();
+  }, []);
+
+  
+
+  const checkDateFilter = (dateString: string, range: string) => {
+    const productDate = new Date(dateString);
+    const today = new Date();
+    switch (range) {
+      case "Today": return productDate.toDateString() === today.toDateString();
+      case "This Month": return productDate.getMonth() === today.getMonth() && productDate.getFullYear() === today.getFullYear();
+      case "This Year": return productDate.getFullYear() === today.getFullYear();
+      case "Last 7 Days": return (today.getTime() - productDate.getTime()) / (1000 * 3600 * 24) <= 7;
+      default: return true;
+    }
+  };
+  
+  const filteredProducts = products.filter(product => {
+    const dateCondition = filterDateRange ? checkDateFilter(product._createdAt, filterDateRange) : true;
+    return (
+      (!filterCategory || product.category.toLowerCase().includes(filterCategory.toLowerCase())) &&
+      (!filterStatus || 
+        (filterStatus === "Published" && product.stock > 6) || 
+        (filterStatus === "Out of Stock" && product.stock === 0) || 
+        (filterStatus === "Low Stock" && product.stock > 0 && product.stock <= 5))
+       &&
+      (!filterStock || (filterStock === "Low Stock" ? product.stock < 5 : product.stock === 0)) &&
+      (!filterPrice || product.price <= filterPrice) &&
+      dateCondition
+    );
+  });
+  
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const handleView = (product: Product) => {
+    console.log("Viewing product:", product);
+  };
+
+  const handleEdit = (product: Product) => {
+    
+  };
+
+  const handleDelete = (productId: string) => {
+    if (confirm("Are you sure you want to delete this product?")) {
+      setProducts(products.filter(product => product._id !== productId));
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col gap-4 pt-6 w-[90%] bg-gray-100 ml-16">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Products</h1>
-        <div className="flex gap-2 items-center">
-          <Link href="/admin/dashboard" className="text-blue-600 hover:underline">Dashboard</Link>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-xl font-bold">Product List</h1>
+      <div className="flex justify-between items-center mb-4">
+      <div className="flex gap-2 items-center">
+          <Link href="/admin/dashboard" className="text-black hover:underline">Dashboard</Link>
           <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
           <Link href="/admin/products" className="text-gray-500 hover:underline">Products</Link>
         </div>
+        <div className="flex gap-2">
+          <button className="bg-black text-white px-4 py-2 rounded" onClick={() => setShowFilters(!showFilters)}>Filters</button>
+          <Link href="/admin/addproducts"><button className="bg-black text-white px-4 py-2 rounded" >Add Products</button></Link>
+        </div>
       </div>
 
-      <div className="w-full bg-white m-4 rounded-lg shadow-lg">
-        <div className="">
-          <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg">
-            <thead>
-              <tr className="bg-gray-50 text-left">
-                <th className=" py-4 px-2">Product</th>
-                <th className=" py-4 px-2">Category</th>
-                <th className=" py-4 px-2">Stock</th>
-                <th className=" py-4 px-2">Price</th>
-                <th className=" py-4 px-2">Status</th>
-                <th className=" py-4 px-2">Added</th>
-                <th className=" py-4 px-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product.id} className=" border-b-2 border-gray-100 hover:bg-gray-50">
-                  <td className=" py-4 px-2">{product.name}</td>
-                  <td className=" py-4 px-2">{product.category}</td>
-                  <td className=" py-4 px-2">{product.stock}</td>
-                  <td className=" py-4 px-2">{product.price}</td>
-                  <td className=" py-4 px-2">
-                    <span className={`px-2 py-1 rounded-full text-sm 
-                      ${product.status === "Published" ? "bg-green-100 text-green-600" :
-                        product.status === "Low Stock" ? "bg-yellow-100 text-yellow-600" :
-                        product.status === "Out of Stock" ? "bg-red-100 text-red-600" :
-                        "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className=" px-4 py-2">{product.added}</td>
-                  <td className=" px-4 py-2 flex justify-center gap-2">
-                    <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" />
-                    <Pencil className="w-5 h-5 cursor-pointer text-blue-600 hover:text-blue-900" />
-                    <Trash className="w-5 h-5 cursor-pointer text-red-600 hover:text-red-900" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {showFilters && (
+        <div className="bg-white p-4 w-[51%] rounded shadow-md mb-4 flex flex-wrap gap-4">
+          <select onChange={(e) => setFilterCategory(e.target.value)} className="border p-2 rounded bg-gray-200 ">
+            <option value="">All Categories</option>
+            <option value="tshirt">T-shirt</option>
+            <option value="jeans">Jeans</option>
+            <option value="hoodie">Hoodie</option>
+            <option value="shirt">Shirt</option>
+            <option value="short">Short</option>
+          </select>
+
+          <select onChange={(e) => setFilterStatus(e.target.value)} className="border p-2 rounded bg-gray-200 ">
+            <option value="">All Status</option>
+            <option value="Published">Published</option>
+            <option value="Low Stock">Low Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+          </select>
+
+          <select onChange={(e) => setFilterStock(e.target.value)} className="border p-2 rounded bg-gray-200 ">
+            <option value="">All Stock</option>
+            <option value="Low Stock">Low Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+          </select>
+
+          <select onChange={(e) => setFilterDateRange(e.target.value)} className="border p-2 rounded bg-gray-200 ">
+            <option value="">All Dates</option>
+            <option value="Today">Today</option>
+            <option value="Last 7 Days">Last 7 Days</option>
+            <option value="This Month">This Month</option>
+            <option value="This Year">This Year</option>
+          </select>
         </div>
+      )}
+
+<table className="w-full bg-white border border-gray-300 rounded-lg">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-3"><input type="checkbox" /></th>
+            <th className="p-3">Product</th>
+            <th className="p-3">Category</th>
+            <th className="p-3">Stock</th>
+            <th className="p-3">Price</th>
+            <th className="p-3">Status</th>
+            <th className="p-3">Added</th>
+            <th className="p-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentProducts.map((product) => (
+            <tr key={product._id} className="border-b border-gray-300">
+              <td className="p-3"><input type="checkbox" /></td>
+              <td className="p-3 flex items-center gap-2">
+                <Image src={product.image} alt={product.name} width={30} height={30} className="rounded-md" />
+                {product.name}
+              </td>
+              <td className="p-3">{product.category}</td>
+              <td className="p-3">{product.stock}</td>
+              <td className="p-3">${product.price}</td>
+              <td className="p-3">
+  {product.stock >= 5 ? (
+    <span className="bg-green-200 text-green-800 px-2 py-1 rounded">Published</span>
+  ) : product.stock === 0 ? (
+    <span className="bg-red-200 text-red-800 px-2 py-1 rounded">Out of Stock</span>
+  ) : product.stock < 5 && product.stock > 0 ? (
+    <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Low Stock</span>
+  ) : null}
+</td>
+
+              <td className="p-3">{new Date(product._createdAt).toLocaleDateString()}</td>
+              <td className="p-3 flex gap-2">
+                <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" onClick={() => handleView(product)} />
+                <Pencil className="w-5 h-5 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(product)} />
+                <Trash className="w-5 h-5 cursor-pointer text-red-600 hover:text-red-900" onClick={() => handleDelete(product._id)} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+
+
+      <div className="mt-4 flex justify-between items-center">
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='bg-black px-4 py-2 border-2 rounded-md text-white'>Previous</button>
+        <div className="flex gap-2">
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+            <button key={page} onClick={() => paginate(page)} className={`${currentPage === page ? "bg-black text-white" : "bg-gray-200"} rounded-md px-2 py-1`}>{page}</button>
+          ))}
+        </div>
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className='bg-black px-4 py-2 border-2 rounded-md text-white'>Next</button>
       </div>
     </div>
   );
 };
 
-export default Products;
+export default ProductTable;
