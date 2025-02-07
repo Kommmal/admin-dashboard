@@ -1,8 +1,26 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import axios from "axios"; // Import axios for HTTP requests
 import { client } from "@/sanity/lib/client";
 import { Upload } from "lucide-react";
+
+// Function to upload the image to Sanity as a file
+async function uploadImageToSanity(imageFile: File): Promise<string> {
+  try {
+    // Upload the image directly to Sanity as a file
+    const asset = await client.assets.upload("image", imageFile, {
+      filename: imageFile.name, // Use the file's name
+    });
+
+    console.log("Image uploaded successfully:", asset);
+
+    return asset._id; // Return the uploaded image asset reference ID
+  } catch (error) {
+    console.error("❌ Failed to upload image:", error);
+    throw error;
+  }
+}
 
 const AddProduct = () => {
   const [product, setProduct] = useState({
@@ -61,18 +79,17 @@ const AddProduct = () => {
     setLoading(true);
 
     try {
-      let imageUrl = "";
+      let imageRef = "";
       if (product.image) {
         try {
-          const imageData = await client.assets.upload("image", product.image);
-          imageUrl = imageData.url;
-          console.log("Image uploaded successfully:", imageUrl); // Check if the URL is correctly retrieved
+          // Upload the image using the helper function that accepts the file object
+          imageRef = await uploadImageToSanity(product.image);
+          console.log("Image uploaded successfully, reference:", imageRef);
         } catch (error) {
           console.error("Image upload failed:", error);
           alert("Failed to upload image. Please try again.");
         }
       }
-    
 
       const newProduct = {
         _type: "products",
@@ -80,9 +97,16 @@ const AddProduct = () => {
         price: parseFloat(product.price),
         slug: { current: product.slug },
         description: product.description,
-        image: imageUrl,
+        image: imageRef // Directly assigning the image reference
+          ? {
+              _type: "image",
+              asset: {
+                _ref: imageRef, // Reference the uploaded image asset
+              },
+            }
+          : undefined, // If no image is uploaded, skip the field
         category: product.category,
-        tags: product.tags.split(",").map(tag => tag.trim()),
+        tags: product.tags.split(",").map((tag) => tag.trim()),
         discountPercent: product.discountPercent ? parseFloat(product.discountPercent) : 0,
         new: product.new,
         colors: product.colors,
@@ -106,9 +130,33 @@ const AddProduct = () => {
       <h2 className="text-3xl font-semibold mb-6 text-gray-900 text-center">Add Product</h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid grid-cols-2 gap-5">
-          <input type="text" name="name" placeholder="Product Name" value={product.name} onChange={handleChange} required className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm" />
-          <input type="text" name="price" placeholder="Price" value={product.price} onChange={handleChange} required className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm" />
-          <input type="text" name="slug" placeholder="Slug" value={product.slug} onChange={handleChange} required className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm" />
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name"
+            value={product.name}
+            onChange={handleChange}
+            required
+            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
+          />
+          <input
+            type="text"
+            name="price"
+            placeholder="Price"
+            value={product.price}
+            onChange={handleChange}
+            required
+            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
+          />
+          <input
+            type="text"
+            name="slug"
+            placeholder="Slug"
+            value={product.slug}
+            onChange={handleChange}
+            required
+            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
+          />
           <select
             name="category"
             value={product.category}
@@ -150,7 +198,9 @@ const AddProduct = () => {
                 <button
                   key={color}
                   type="button"
-                  className={`p-2 rounded-lg border ${product.colors.includes(color) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                  className={`p-2 rounded-lg border ${
+                    product.colors.includes(color) ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                  }`}
                   onClick={() => toggleSelection("colors", color)}
                 >
                   {color}
@@ -165,7 +215,9 @@ const AddProduct = () => {
                 <button
                   key={size}
                   type="button"
-                  className={`p-2 rounded-lg border ${product.sizes.includes(size) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                  className={`p-2 rounded-lg border ${
+                    product.sizes.includes(size) ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
+                  }`}
                   onClick={() => toggleSelection("sizes", size)}
                 >
                   {size}
@@ -173,36 +225,50 @@ const AddProduct = () => {
               ))}
             </div>
           </div>
-          
-      
-        
-          <input type="number" name="stock" placeholder="Stock" value={product.stock} onChange={handleChange} required className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm" />
+
+          <input
+            type="number"
+            name="stock"
+            placeholder="Stock"
+            value={product.stock}
+            onChange={handleChange}
+            required
+            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
+          />
         </div>
-        <textarea name="description" placeholder="Description" value={product.description} onChange={handleChange} required className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"></textarea>
+        <textarea
+          name="description"
+          placeholder="Description"
+          value={product.description}
+          onChange={handleChange}
+          required
+          className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
+        ></textarea>
 
         {/* Image Upload Section */}
         <label className="block text-gray-700">Upload Image</label>
         <div className="relative flex flex-col items-center justify-center p-5 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:border-gray-500">
-          <input type="file" name="image" onChange={handleImageChange} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer" />
-          <Upload className="h-10 w-10 text-gray-500" />
-          <span className="text-sm text-gray-600">Click to upload image</span>
+          <input
+            type="file"
+            name="image"
+            onChange={handleImageChange}
+            className="absolute inset-0 opacity-0 w-full h-full"
+            accept="image/*"
+          />
+          {imagePreview ? (
+            <img src={imagePreview} alt="Image Preview" className="w-32 h-32 object-cover rounded-lg mb-2" />
+          ) : (
+            <Upload className="w-16 h-16 text-gray-600" />
+          )}
+          <span className="text-gray-700">Drag & Drop to upload or click to browse</span>
         </div>
 
-        {/* Show Image Preview After Upload */}
-        {imagePreview && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold">Image Preview</h3>
-            <img src={imagePreview} alt="Image Preview" className="mt-2 w-32 h-32 object-cover rounded-lg" />
-          </div>
-        )}
-
-        <label className="flex items-center gap-3">
-          <input type="checkbox" name="new" checked={product.new} onChange={handleChange} className="w-4 h-4" />
-          <span className="text-gray-800 text-base">New Product</span>
-        </label>
-
-        <button type="submit" disabled={loading} className="w-full p-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 text-lg shadow-md">
-          {loading ? "Adding..." : "Add Product"}
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+          disabled={loading}
+        >
+          {loading ? "Adding Product..." : "Add Product"}
         </button>
       </form>
     </div>
