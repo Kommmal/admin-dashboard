@@ -20,6 +20,7 @@ interface Product {
   sku: string;
   stock: number;
   status: string;
+  slug: string
 }
 
 const ProductTable = () => {
@@ -46,7 +47,8 @@ const ProductTable = () => {
         isNew,
         sku,
         stock,
-        status
+        status,
+         "slug": slug.current
       }`;
       const result = await client.fetch(query);
       setProducts(result);
@@ -193,7 +195,9 @@ const ProductTable = () => {
 
               <td className="p-3">{new Date(product._createdAt).toLocaleDateString()}</td>
               <td className="p-3 flex gap-2">
-                <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" onClick={() => handleView(product)} />
+              <Link href={`/admin/products/${product.slug}`}>
+                  <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" />
+                </Link>
                 <Pencil className="w-5 h-5 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(product)} />
                 <Trash className="w-5 h-5 cursor-pointer text-red-600 hover:text-red-900" onClick={() => handleDelete(product._id)} />
               </td>

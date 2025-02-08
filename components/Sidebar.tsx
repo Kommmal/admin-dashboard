@@ -56,14 +56,7 @@ const Sidebar = () => {
           <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Add Product</span>
         </Link> 
         </div>
-        <Link href="/admin/user" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
-          <User size={18} />
-          <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>User</span>
-        </Link>
-        <Link href="/admin/settings" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
-          <Settings size={18} />
-          <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Settings</span>
-        </Link>
+        
       </div>
 
 
