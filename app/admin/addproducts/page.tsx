@@ -54,21 +54,27 @@ const AddProducts = () => {
     stock: "",
     sku: "",
   });
-  
+
 
   const [imagePreview, setImagePreview] = useState(null);
   const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const availableTags = ["newarrivals", "topselling", "bestselling"];
+
+
+
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
+
     setProduct((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : name === "tags" ? value : value,
     }));
   };
-  
+
 
   const toggleSelection = (type: "colors" | "sizes", value: string) => {
     setProduct((prev) => {
@@ -76,14 +82,17 @@ const AddProducts = () => {
       const newSelection = currentSelection.includes(value)
         ? currentSelection.filter((item) => item !== value)
         : [...currentSelection, value];
-  
+
       return {
         ...prev,
         [type]: newSelection,
       };
     });
   };
-  
+
+ 
+
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -92,12 +101,12 @@ const AddProducts = () => {
       setProduct((prev) => ({ ...prev, image: file }));
     }
   };
-  
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-  
+
     try {
       let imageRef = "";
       if (product.image instanceof File) {
@@ -109,7 +118,7 @@ const AddProducts = () => {
           return;
         }
       }
-  
+
       const newProduct = {
         _type: "products",
         name: product.name,
@@ -118,15 +127,16 @@ const AddProducts = () => {
         description: product.description,
         image: imageRef ? { _type: "image", asset: { _ref: imageRef } } : null,
         category: product.category,
-        tags: product.tags.split(",").map((tag) => tag.trim()),
+        tags: product.tags,
         discountPercent: product.discountPercent ? parseFloat(product.discountPercent) : 0,
         new: product.new,
         colors: product.colors,
         sizes: product.sizes,
         stock: parseInt(product.stock),
         sku: product.sku,
+        status: status
       };
-  
+
       await client.create(newProduct);
       alert("✅ Product added successfully!");
       router.push("/admin/products");
@@ -137,7 +147,7 @@ const AddProducts = () => {
       setLoading(false);
     }
   };
-  
+
 
   return (
     <div className='flex flex-col my-8 mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
@@ -150,7 +160,7 @@ const AddProducts = () => {
           <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
           <Link href="/admin/addproducts" className="  active:text-gray-400 ">Add Product</Link>
         </div>
-        
+
       </div>
       <form onSubmit={handleSubmit} className="flex gap-5">
         <div className='flex flex-col gap-4 w-[70%]'>
@@ -158,11 +168,15 @@ const AddProducts = () => {
             <h1 className='text-2xl font-semibold'>General Information</h1>
             <div className='' >
               <h1 className='font-semibold text-gray-500'>Product Name</h1>
-              <input type="text" placeholder='Type product name here...' name='name' value={product.name}   className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+              <input type="text" placeholder='Type product name here...' name='name' value={product.name} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+            </div>
+            <div className='' >
+              <h1 className='font-semibold text-gray-500'>Slug</h1>
+              <input type="text" placeholder='example: black-tshirt' name="slug" value={product.slug} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
             </div>
             <div className='' >
               <h1 className='font-semibold text-gray-500'>Description</h1>
-              <textarea rows={7} placeholder='Type product name here...' name="description" value={product.description} className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
+              <textarea rows={7} placeholder='Type product name here...' name="description" value={product.description} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
             </div>
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
@@ -177,7 +191,7 @@ const AddProducts = () => {
                 </>
               )}
 
-           
+
               <label
                 htmlFor="image-upload"
                 className="mt-2 px-4 py-2 bg-black text-white rounded-lg cursor-pointer hover:bg-black"
@@ -198,12 +212,12 @@ const AddProducts = () => {
 
             <div className='flex gap-4  w-full' >
               <div className='w-[50%]' >
-                <h1 className='font-semibold text-gray-500' value={product.price} onChange={handleChange} required>Base Price</h1>
-                <input type="text" placeholder='$ Type base SKU here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+                <h1 className='font-semibold text-gray-500' >Base Price</h1>
+                <input type="text" placeholder='$ Type price here...' name="price" value={product.price} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
               <div className='w-[50%]'>
-                <h1 className='font-semibold text-gray-500' value={product.discountPercent} onChange={handleChange} required>Discount</h1>
-                <input type="text" placeholder='Type product quantity here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
+                <h1 className='font-semibold text-gray-500' >Discount</h1>
+                <input type="text" placeholder='Type product discount here...' name="discountPercent" value={product.discountPercent} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
             </div>
           </div>
@@ -212,12 +226,12 @@ const AddProducts = () => {
 
             <div className='flex gap-4  w-full' >
               <div className='w-[50%]' >
-                <h1 className='font-semibold text-gray-500' value={product.sku} onChange={handleChange} required>SKU</h1>
-                <input type="text" placeholder='$ Type base SKU here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+                <h1 className='font-semibold text-gray-500' >SKU</h1>
+                <input type="text" placeholder='$ Type base SKU here...' name="sku" value={product.sku} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
               <div className='w-[50%]'>
-                <h1 className='font-semibold text-gray-500' value={product.stock} onChange={handleChange} required>Quantity</h1>
-                <input type="text" placeholder='Type product quantity here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
+                <h1 className='font-semibold text-gray-500' >Quantity</h1>
+                <input type="text" placeholder='Type product quantity here...' name="stock" value={product.stock} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
             </div>
           </div>
@@ -275,21 +289,23 @@ const AddProducts = () => {
                 <option value="shirt" className="text-black">Shirt</option>
               </select>
             </div>
-            <div className='' >
-              <h1 className='font-semibold text-gray-500'>Product Tags</h1>
-              <select
-                name="tags"
-                value={product.tags}
-                onChange={handleChange}
-                required
-                className="w-full border  border-gray-100 bg-gray-50 p-2 rounded-xl"
-              >
-                <option value="" className="text-black">Select Tags</option>
-                <option value="newarrivals" className="text-black">New Arrivals</option>
-                <option value="topselling" className="text-black">Top Selling</option>
-                <option value="bestselling" className="text-black">Best Selling</option>
-              </select>
+            <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+              <h1 className='text-2xl font-semibold'>Tags</h1>
+              <div className=''>
+                <h1 className='font-semibold text-gray-500'>Product Tags</h1>
+                <select
+                  name="tags"
+                  value={product.tags}
+                  onChange={handleChange}
+                  className="w-full border border-gray-100 bg-gray-50 p-2 rounded-xl"
+                >
+                  <option value="newarrival" className="text-black">New Arrival</option>
+                  <option value="topselling" className="text-black">Top Selling</option>
+                  <option value="bestselling" className="text-black">Best Selling</option>
+                </select>
+              </div>
             </div>
+
 
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
@@ -301,6 +317,7 @@ const AddProducts = () => {
             </div>
 
             <select
+              name="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className="w-full mt-1 border border-gray-300 rounded-md p-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
@@ -311,9 +328,9 @@ const AddProducts = () => {
             </select>
           </div>
           <div className='flex justify-between'>
-          <button className='bg-inherit text-gray-400 px-4 py-2 border border-gray-400 rounded-lg'>Cancel</button>
-          <button type="submit" disabled={loading} className='bg-black text-white px-4 py-2 border rounded-lg'> {loading ? "Adding..." : "Add Product"}</button>
-        </div>
+            <button className='bg-inherit text-gray-400 px-4 py-2 border border-gray-400 rounded-lg'>Cancel</button>
+            <button type="submit" disabled={loading} className='bg-black text-white px-4 py-2 border rounded-lg'> {loading ? "Adding..." : "Add Product"}</button>
+          </div>
         </div>
       </form>
     </div>
