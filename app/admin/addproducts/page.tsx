@@ -1,29 +1,45 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios"; // Import axios for HTTP requests
+import { Image as ImageIcon } from "lucide-react";
+import Link from "next/link";
+import { ChevronDownIcon } from "lucide-react";
 import { client } from "@/sanity/lib/client";
-import { Upload } from "lucide-react";
 
-// Function to upload the image to Sanity as a file
+interface Product {
+  name: string;
+  price: string;
+  slug: string;
+  description: string;
+  image: File | null;
+  category: string;
+  tags: string;
+  discountPercent: string;
+  new: boolean;
+  colors: string[];
+  sizes: string[];
+  stock: string;
+  sku: string;
+}
+
+
 async function uploadImageToSanity(imageFile: File): Promise<string> {
   try {
-    // Upload the image directly to Sanity as a file
     const asset = await client.assets.upload("image", imageFile, {
-      filename: imageFile.name, // Use the file's name
+      filename: imageFile.name,
     });
-
-    console.log("Image uploaded successfully:", asset);
-
-    return asset._id; // Return the uploaded image asset reference ID
+    console.log("✅ Image uploaded:", asset);
+    return asset._id;
   } catch (error) {
-    console.error("❌ Failed to upload image:", error);
+    console.error("❌ Image upload failed:", error);
     throw error;
   }
 }
 
-const AddProduct = () => {
-  const [product, setProduct] = useState({
+
+const AddProducts = () => {
+  const [product, setProduct] = useState<Product>({
     name: "",
     price: "",
     slug: "",
@@ -36,75 +52,71 @@ const AddProduct = () => {
     colors: [],
     sizes: [],
     stock: "",
+    sku: "",
   });
+  
 
+  const [imagePreview, setImagePreview] = useState(null);
+  const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // State to store the image preview URL
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setProduct((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  
 
   const toggleSelection = (type: "colors" | "sizes", value: string) => {
     setProduct((prev) => {
-      const currentSelection = prev[type];
+      const currentSelection = Array.isArray(prev[type]) ? prev[type] : []; // Ensure it's an array
       const newSelection = currentSelection.includes(value)
-        ? currentSelection.filter((item) => item !== value) // Remove if already selected
-        : [...currentSelection, value]; // Add if not selected
+        ? currentSelection.filter((item) => item !== value)
+        : [...currentSelection, value];
+  
       return {
         ...prev,
         [type]: newSelection,
       };
     });
   };
+  
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-
-      // Set the preview URL for the uploaded image
       setImagePreview(URL.createObjectURL(file));
-
       setProduct((prev) => ({ ...prev, image: file }));
     }
   };
+  
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
       let imageRef = "";
-      if (product.image) {
+      if (product.image instanceof File) {
         try {
-          // Upload the image using the helper function that accepts the file object
           imageRef = await uploadImageToSanity(product.image);
-          console.log("Image uploaded successfully, reference:", imageRef);
         } catch (error) {
-          console.error("Image upload failed:", error);
-          alert("Failed to upload image. Please try again.");
+          alert("❌ Failed to upload image. Please try again.");
+          setLoading(false);
+          return;
         }
       }
-
+  
       const newProduct = {
         _type: "products",
         name: product.name,
         price: parseFloat(product.price),
         slug: { current: product.slug },
         description: product.description,
-        image: imageRef // Directly assigning the image reference
-          ? {
-              _type: "image",
-              asset: {
-                _ref: imageRef, // Reference the uploaded image asset
-              },
-            }
-          : undefined, // If no image is uploaded, skip the field
+        image: imageRef ? { _type: "image", asset: { _ref: imageRef } } : null,
         category: product.category,
         tags: product.tags.split(",").map((tag) => tag.trim()),
         discountPercent: product.discountPercent ? parseFloat(product.discountPercent) : 0,
@@ -112,167 +124,201 @@ const AddProduct = () => {
         colors: product.colors,
         sizes: product.sizes,
         stock: parseInt(product.stock),
+        sku: product.sku,
       };
-
+  
       await client.create(newProduct);
-      alert("Product added successfully!");
-      router.push("/dashboard");
+      alert("✅ Product added successfully!");
+      router.push("/admin/products");
     } catch (error) {
-      console.error("Error adding product:", error);
+      console.error("❌ Error adding product:", error);
       alert("Failed to add product. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white shadow-xl rounded-lg border border-gray-200">
-      <h2 className="text-3xl font-semibold mb-6 text-gray-900 text-center">Add Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="grid grid-cols-2 gap-5">
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={product.name}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          />
-          <input
-            type="text"
-            name="price"
-            placeholder="Price"
-            value={product.price}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          />
-          <input
-            type="text"
-            name="slug"
-            placeholder="Slug"
-            value={product.slug}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          />
-          <select
-            name="category"
-            value={product.category}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          >
-            <option value="">Select Category</option>
-            <option value="tshirt">T-Shirt</option>
-            <option value="short">Short</option>
-            <option value="jeans">Jeans</option>
-            <option value="hoodie">Hoodie</option>
-            <option value="shirt">Shirt</option>
-          </select>
-          <select
-            name="tags"
-            value={product.tags}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          >
-            <option value="">Select Tags</option>
-            <option value="newarrivals">New Arrivals</option>
-            <option value="topselling">Top Selling</option>
-            <option value="bestselling">Best Selling</option>
-          </select>
-          <input
-            type="number"
-            name="discountPercent"
-            placeholder="Discount (%)"
-            value={product.discountPercent}
-            onChange={handleChange}
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          />
-          <div className="space-y-2">
-            <span className="text-gray-700">Select Colors</span>
-            <div className="flex gap-3">
-              {["Red", "Blue", "Green", "Black", "White"].map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`p-2 rounded-lg border ${
-                    product.colors.includes(color) ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => toggleSelection("colors", color)}
-                >
-                  {color}
-                </button>
-              ))}
+    <div className='flex flex-col my-8 mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
+      <h1 className='text-4xl font-semibold'>Add Product</h1>
+      <div className='flex justify-between itens-center mt-2 mb-8'>
+        <div className="flex gap-2 items-center">
+          <Link href="/admin/dashboard" className=" active:text-gray-400  ">Dashboard</Link>
+          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
+          <Link href="/admin/products" className=" active:text-gray-400 ">Product List</Link>
+          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
+          <Link href="/admin/addproducts" className="  active:text-gray-400 ">Add Product</Link>
+        </div>
+        
+      </div>
+      <form onSubmit={handleSubmit} className="flex gap-5">
+        <div className='flex flex-col gap-4 w-[70%]'>
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>General Information</h1>
+            <div className='' >
+              <h1 className='font-semibold text-gray-500'>Product Name</h1>
+              <input type="text" placeholder='Type product name here...' name='name' value={product.name}   className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+            </div>
+            <div className='' >
+              <h1 className='font-semibold text-gray-500'>Description</h1>
+              <textarea rows={7} placeholder='Type product name here...' name="description" value={product.description} className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
             </div>
           </div>
-          <div className="space-y-2">
-            <span className="text-gray-700">Select Sizes</span>
-            <div className="flex gap-3">
-              {["S", "M", "L", "XL"].map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  className={`p-2 rounded-lg border ${
-                    product.sizes.includes(size) ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-                  }`}
-                  onClick={() => toggleSelection("sizes", size)}
-                >
-                  {size}
-                </button>
-              ))}
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>Media</h1>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center flex flex-col items-center justify-center w-full max-w-full bg-gray-50 hover:bg-gray-100 transition">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" />
+              ) : (
+                <>
+                  <ImageIcon className="w-10 h-10 mb-2" />
+                  <p className="text-gray-500">Drag and drop image here, or click add image</p>
+                </>
+              )}
+
+           
+              <label
+                htmlFor="image-upload"
+                className="mt-2 px-4 py-2 bg-black text-white rounded-lg cursor-pointer hover:bg-black"
+              >
+                Add Image
+              </label>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
             </div>
           </div>
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>Pricing</h1>
 
-          <input
-            type="number"
-            name="stock"
-            placeholder="Stock"
-            value={product.stock}
-            onChange={handleChange}
-            required
-            className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-          />
+            <div className='flex gap-4  w-full' >
+              <div className='w-[50%]' >
+                <h1 className='font-semibold text-gray-500' value={product.price} onChange={handleChange} required>Base Price</h1>
+                <input type="text" placeholder='$ Type base SKU here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+              </div>
+              <div className='w-[50%]'>
+                <h1 className='font-semibold text-gray-500' value={product.discountPercent} onChange={handleChange} required>Discount</h1>
+                <input type="text" placeholder='Type product quantity here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
+              </div>
+            </div>
+          </div>
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>Inventory</h1>
+
+            <div className='flex gap-4  w-full' >
+              <div className='w-[50%]' >
+                <h1 className='font-semibold text-gray-500' value={product.sku} onChange={handleChange} required>SKU</h1>
+                <input type="text" placeholder='$ Type base SKU here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
+              </div>
+              <div className='w-[50%]'>
+                <h1 className='font-semibold text-gray-500' value={product.stock} onChange={handleChange} required>Quantity</h1>
+                <input type="text" placeholder='Type product quantity here...' className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
+              </div>
+            </div>
+          </div>
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>Colors & Sizes</h1>
+            <div className='flex flex-col gap-2  w-full' >
+              <h1 className='font-semibold text-gray-500'>Colors</h1>
+              <div className="flex gap-3">
+                {["Red", "Blue", "Green", "Black", "White"].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`p-2 rounded-lg border ${product.colors.includes(color) ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'}`}
+                    onClick={() => toggleSelection("colors", color)}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className='flex flex-col gap-2  w-full'>
+              <h1 className='font-semibold text-gray-500'>Sizes</h1>
+              <div className="flex gap-3">
+                {["S", "M", "L", "XL"].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    className={`px-3 py-2 rounded-lg border ${product.sizes.includes(size) ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'}`}
+                    onClick={() => toggleSelection("sizes", size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={product.description}
-          onChange={handleChange}
-          required
-          className="p-3 border rounded-lg w-full bg-gray-50 text-gray-900 shadow-sm"
-        ></textarea>
+        <div className="w-[30%] flex gap-4 flex-col">
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <h1 className='text-2xl font-semibold'>Category</h1>
+            <div className='' >
+              <h1 className='font-semibold text-gray-500'>Product Category</h1>
+              <select
+                name="category"
+                value={product.category}
+                onChange={handleChange}
+                required
+                className="w-full border  border-gray-100 bg-gray-50 p-2 rounded-xl "
+              >
+                <option value="" className="text-black">Select Category</option>
+                <option value="tshirt" className="text-black">T-Shirt</option>
+                <option value="short" className="text-black">Short</option>
+                <option value="jeans" className="text-black">Jeans</option>
+                <option value="hoodie" className="text-black">Hoodie</option>
+                <option value="shirt" className="text-black">Shirt</option>
+              </select>
+            </div>
+            <div className='' >
+              <h1 className='font-semibold text-gray-500'>Product Tags</h1>
+              <select
+                name="tags"
+                value={product.tags}
+                onChange={handleChange}
+                required
+                className="w-full border  border-gray-100 bg-gray-50 p-2 rounded-xl"
+              >
+                <option value="" className="text-black">Select Tags</option>
+                <option value="newarrivals" className="text-black">New Arrivals</option>
+                <option value="topselling" className="text-black">Top Selling</option>
+                <option value="bestselling" className="text-black">Best Selling</option>
+              </select>
+            </div>
 
-        {/* Image Upload Section */}
-        <label className="block text-gray-700">Upload Image</label>
-        <div className="relative flex flex-col items-center justify-center p-5 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:border-gray-500">
-          <input
-            type="file"
-            name="image"
-            onChange={handleImageChange}
-            className="absolute inset-0 opacity-0 w-full h-full"
-            accept="image/*"
-          />
-          {imagePreview ? (
-            <img src={imagePreview} alt="Image Preview" className="w-32 h-32 object-cover rounded-lg mb-2" />
-          ) : (
-            <Upload className="w-16 h-16 text-gray-600" />
-          )}
-          <span className="text-gray-700">Drag & Drop to upload or click to browse</span>
+          </div>
+          <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Status</h3>
+              <span className="text-sm px-3 py-1 bg-gray-200 text-gray-600 rounded-md">
+                {status}
+              </span>
+            </div>
+
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full mt-1 border border-gray-300 rounded-md p-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
+              <option value="Draft" >Draft</option>
+              <option value="Published">Published</option>
+              <option value="Archived">Archived</option>
+            </select>
+          </div>
+          <div className='flex justify-between'>
+          <button className='bg-inherit text-gray-400 px-4 py-2 border border-gray-400 rounded-lg'>Cancel</button>
+          <button type="submit" disabled={loading} className='bg-black text-white px-4 py-2 border rounded-lg'> {loading ? "Adding..." : "Add Product"}</button>
         </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white font-semibold py-3 px-5 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
-          disabled={loading}
-        >
-          {loading ? "Adding Product..." : "Add Product"}
-        </button>
+        </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default AddProduct;
+export default AddProducts
+

@@ -5,6 +5,9 @@ import { ChevronDownIcon, Eye, Pencil, Trash } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
 
+
+
+
 interface Product {
   _id: string;
   name: string;
@@ -157,6 +160,7 @@ const ProductTable = () => {
             <th className="p-3"><input type="checkbox" /></th>
             <th className="p-3">Product</th>
             <th className="p-3">Category</th>
+            <th className="p-3">SKU</th>
             <th className="p-3">Stock</th>
             <th className="p-3">Price</th>
             <th className="p-3">Status</th>
@@ -173,17 +177,19 @@ const ProductTable = () => {
                 {product.name}
               </td>
               <td className="p-3">{product.category}</td>
+              <td className="p-3">{product.sku}</td>
               <td className="p-3">{product.stock}</td>
               <td className="p-3">${product.price}</td>
               <td className="p-3">
-  {product.stock >= 5 ? (
+  {product.status === "Published" && product.stock >= 5 ? (
     <span className="bg-green-200 text-green-800 px-2 py-1 rounded">Published</span>
   ) : product.stock === 0 ? (
     <span className="bg-red-200 text-red-800 px-2 py-1 rounded">Out of Stock</span>
-  ) : product.stock < 5 && product.stock > 0 ? (
+  ) : product.stock > 0 && product.stock < 5 ? (
     <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Low Stock</span>
   ) : null}
 </td>
+
 
               <td className="p-3">{new Date(product._createdAt).toLocaleDateString()}</td>
               <td className="p-3 flex gap-2">

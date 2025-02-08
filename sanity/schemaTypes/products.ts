@@ -32,9 +32,6 @@ export default defineType({
             name: 'image',
             title: 'Image',
             type: 'image',
-            options: {
-                hotspot: true,
-              },
         },
         {
             name: "category",
@@ -59,6 +56,18 @@ export default defineType({
                     { title: 'NewArrivals', value: 'newarrivals' },
                     { title: 'TopSelling', value: 'topselling' },
                     { title: 'BestSelling', value: 'bestselling' },
+                ]
+            }
+        },
+        {
+            name: "status",
+            title: "Status",
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Published', value: 'Published' },
+                    { title: 'Draft', value: 'Draft' },
+                    { title: 'Archieved', value: 'Archieved' },
                 ]
             }
         },
@@ -92,6 +101,12 @@ export default defineType({
             name: "stock",
             title: "Stock",
             type: 'number',
-        }
+        },
+        {
+            name: "sku",
+            title: "SKU",
+            type: 'number',
+        },
+       
     ],
 });
