@@ -96,7 +96,7 @@ const Orders = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col gap-4 py-6 bg-gray-100">
+    <div className="min-h-screen flex flex-col gap-4 p-6 bg-gray-100">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">Orders</h1>
         <div className="flex gap-2 items-center">
@@ -142,7 +142,7 @@ const Orders = () => {
           <tbody className="w-full">
             {currentOrders.map((order) => (
               <tr key={order._id} className="border-b-2 border-gray-100 hover:bg-gray-50 ">
-                
+
                 <td className="py-4 px-2 flex items-center gap-2">
                   {order.products?.length > 0 && order.products[0]?.image ? (
                     <img
@@ -155,7 +155,7 @@ const Orders = () => {
                   )}
                   {order.products?.length > 0 ? order.products[0]?.name : "N/A"}
                 </td>
-                <td className="">{order.firstName} {order.lastName} 
+                <td className="">{order.firstName} {order.lastName}
                   <div className="text-xs text-gray-400 ">{order.email}</div></td>
                 <td className="py-4 px-2">${order.total}</td>
                 <td className="py-4 px-2">{order.paymentMethod}</td>
@@ -170,7 +170,9 @@ const Orders = () => {
                 </td>
                 <td className="px-4 py-2">{new Date(order._createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-2 flex justify-center gap-2">
-                  <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" onClick={() => handleView(order._id)} />
+                  <Link href={`/admin/orders/${order._id}`}>
+                    <Eye className="w-5 h-5 cursor-pointer text-gray-600 hover:text-gray-900" />
+                  </Link>
                   <Pencil className="w-5 h-5 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(order._id)} />
                 </td>
               </tr>

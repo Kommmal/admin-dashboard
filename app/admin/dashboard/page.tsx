@@ -1,8 +1,13 @@
-"use client"
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
-
+import { OrdersBarChart } from "@/components/OrderBarChart";
+import { OrderStatusPieChart } from "@/components/OrderStatusPieChart";
+import customer from "@/src/assests/images/Customer Active.png";
+import Dollar from "@/src/assests/images/Annual Goal.png";
+import Truck from "@/src/assests/images/Services.png";
+import Order from "@/src/assests/images/Services (2).png";
 
 interface Product {
   name: string;
@@ -33,15 +38,18 @@ interface TopSelling {
   sku: string;
   stock: number;
   status: string;
-  slug: string
+  slug: string;
 }
 
 export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [topSellingProducts, setTopSellingProducts] = useState<TopSelling[]>([]);
- 
+  const [orderLength, setOrderLength] = useState<number>(0);
+  const [filter, setFilter] = useState("Today");
+  const [barFilter, setBarFilter] = useState("Today");
+
   useEffect(() => {
-    client.fetch(`*[_type == "order"][0..6]{
+    client.fetch(`*[_type == "order"]{
         _id,
         firstName,
         lastName,
@@ -54,52 +62,128 @@ export default function Dashboard() {
           name,
           image
         }
-      }
-        `).then((data) => setOrders(data));
+      }`)
+      .then((data) => {
+        setOrders(data);
+        setOrderLength(data.length);
+      });
+
     client.fetch(`*[_type == "products" && tags == "bestselling"]
-      {_id,
-        name,
-        "image": image.asset->url,
-        category,
-        _createdAt,
-        tags,
-        price,
-        isNew,
-        sku,
-        stock,
-        status,
-        }`).then((data) => setTopSellingProducts(data));
+        {_id,
+          name,
+          "image": image.asset->url,
+          category,
+          _createdAt,
+          tags,
+          price,
+          isNew,
+          sku,
+          stock,
+          status,
+          }`).then((data) => setTopSellingProducts(data));
   }, []);
 
+  // Filter orders by date
+  const filteredOrders = useMemo(() => {
+    const now = new Date();
+    return filter === "Today"
+      ? orders.filter(order =>
+        new Date(order._createdAt).toDateString() === now.toDateString()
+      )
+      : orders;
+  }, [filter, orders]);
+
+
+  // Calculate total revenue
+  const totalRevenue = useMemo(() => {
+    return orders.reduce((sum, order) => sum + order.total, 0);
+  }, [orders]);
+
+
+  const filterOrders = (barFilter: string) => {
+    const now = new Date();
+    return orders.filter((order) => {
+      const orderDate = new Date(order._createdAt);
+
+      if (filter === "Today") {
+        return orderDate.toDateString() === now.toDateString();
+      }
+      if (filter === "7 Days") {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(now.getDate() - 7);
+        return orderDate >= sevenDaysAgo;
+      }
+      if (filter === "Month") {
+        return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
+      }
+      if (filter === "Year") {
+        return orderDate.getFullYear() === now.getFullYear();
+      }
+      return true;
+    });
+  };
+
+  // Compute sales based on filtered orders
+  const totalSales = useMemo(() => {
+    return filterOrders(barFilter).reduce((sum, order) => sum + order.total, 0);
+  }, [orders, filter]);
+
   return (
-    <div className="max-w-7xl mx-auto p-6  ">
-      <h1 className="text-3xl font-semibold text-center mb-10">Shop.co Dashboard</h1>
+    <div className="max-w-7xl mx-auto p-6">
+      <h1 className="text-3xl font-semibold text-center mb-10">Shop.ce Dashboard</h1>
 
       {/* Stats Section */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Sale Revenue</h3>
-          <p className="text-3xl font-bold">$20,000</p>
+        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
+          <div>
+            <Image alt="order png" src={Dollar} width={60} height={60}></Image>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-1">Total Sale Revenue</h3>
+            <p className="text-3xl font-bold">${totalRevenue.toLocaleString()}</p>
+          </div>
         </div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Orders</h3>
-          <p className="text-3xl font-bold">150</p>
+        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
+          <div>
+            <Image alt="order png" src={Order} width={60} height={60}></Image>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-1">Total Orders</h3>
+            <p className="text-3xl font-bold">{orderLength}</p>
+          </div>
         </div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Sales</h3>
-          <p className="text-3xl font-bold">300</p>
+        <div className="bg-gray-100 p-3 flex gap-4 rounded-lg shadow-md ">
+          <div>
+            <Image alt="order png" src={customer} width={60} height={60}></Image>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-1">Orders Today</h3>
+            <p className="text-3xl font-bold">{filteredOrders.length}</p>
+          </div>
         </div>
-        <div className="bg-gray-200 p-6 rounded-lg shadow-md text-center">
-          <h3 className="text-xl font-semibold mb-2">Total Top-Selling Products</h3>
-          <p className="text-3xl font-bold">10</p>
+        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
+          <div>
+            <Image alt="order png" src={Truck} width={60} height={60}></Image>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold mb-1">Order Pending</h3>
+            <p className="text-3xl font-bold">{orders.filter(order => order.status === "Pending").length}</p>
+          </div>
         </div>
       </section>
 
-      {/* Orders Section */}
+      {/* Charts Section */}
+      <section className="mb-12 flex gap-5">
+        <OrdersBarChart />
+        {/* Order Status Distribution Chart */}
+        <OrderStatusPieChart />
+      </section>
+
+      {/* Orders Table */}
       <section className="mb-12">
         <h2 className="text-2xl font-medium mb-4">Recent Orders</h2>
         <table className="min-w-full bg-gray-50 border border-gray-300 rounded-lg shadow-md">
-          <thead className="bg-gray-200 ">
+          <thead className="bg-gray-200">
             <tr>
               <th className="py-4 px-2">Product</th>
               <th className="py-4 px-2">Customer</th>
@@ -110,7 +194,7 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {filteredOrders.map(order => (
               <tr key={order._id} className="text-center border-b hover:bg-gray-300">
                 <td className="py-4 px-2 flex items-center gap-2">
                   {order.products?.length > 0 && order.products[0]?.image ? (
@@ -124,15 +208,17 @@ export default function Dashboard() {
                   )}
                   {order.products?.length > 0 ? order.products[0]?.name : "N/A"}
                 </td>
-                <td className="">{order.firstName} {order.lastName}
-                  <div className="text-xs text-gray-400 ">{order.email}</div></td>
+                <td>
+                  {order.firstName} {order.lastName}
+                  <div className="text-xs text-gray-400">{order.email}</div>
+                </td>
                 <td className="py-4 px-2">${order.total}</td>
                 <td className="px-4 py-2">{new Date(order._createdAt).toLocaleDateString()}</td>
                 <td className="py-4 px-2">{order.paymentMethod}</td>
                 <td className="py-4 px-2">
-                  <span className={`px-2 py-1 rounded-full text-sm ${order.status === "Completed" ? "bg-green-100 text-green-600" :
+                  <span className={`px-2 py-1 rounded-full text-sm ${order.status === "Shipped" ? "bg-green-100 text-green-600" :
                     order.status === "Pending" ? "bg-yellow-100 text-yellow-600" :
-                      order.status === "Cancelled" ? "bg-red-100 text-red-600" :
+                      order.status === "Delivered" ? "bg-red-100 text-blue-600" :
                         "bg-gray-100 text-gray-600"
                     }`}>
                     {order.status}
@@ -189,66 +275,7 @@ export default function Dashboard() {
         </table>
       </section>
 
-      {/* Charts Section */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-medium mb-4">Sales and Performance</h2>
-        <div className="flex gap-10">
-          {/* Vertical Building Chart (Top Selling Products) */}
-          <div className="flex-1 bg-gray-50 p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold mb-4">Top Selling Products</h3>
-            <div className="relative flex items-end gap-4 h-72">
-              {/* Y-Axis with labels */}
-              <div className="absolute left-0 top-0 flex flex-col justify-between h-full  text-sm">
-                {[200, 150, 100, 50, 0].map((value, index) => (
-                  <div key={index} className="h-full flex items-center justify-end">
-                    <span>{value}</span>
-                  </div>
-                ))}
-              </div>
 
-              {/* Bar Chart with X-Axis */}
-              <div className="flex-1 flex items-end gap-10 pl-16 pb-4">
-                {topSellingProducts.map((product, index) => {
-                  const salesValue = (index + 1) * 100;
-                  const barHeight = Math.max(salesValue, 40); 
-
-                  return (
-                    <div key={index} className="relative w-16 flex flex-col items-center group">
-                      <div
-                        className="bg-blue-500 w-full  rounded-t-lg"
-                        style={{ height: `${barHeight}px` }}
-                      ></div>
-
-                      
-                      <div className="absolute bottom-full mb-2 p-2 bg-gray-800 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-                        <p className="text-sm">{product.name}</p>
-                        <p className="font-bold">{`$${product.price}`}</p>
-                      </div>
-
-                
-                    </div>
-                  );
-                })}
-              </div>
-
-              
-            </div>
-          </div>
-
-          <div className="flex-1 bg-gray-50 p-4 rounded-lg shadow-md ">
-            <h3 className="text-xl font-semibold mb-4">Order Status Distribution</h3>
-            <div className="w-64 h-64 mx-auto flex justify-center bg-gray-600 rounded-full ">
-              <div
-                className="w-full h-full rounded-full"
-                style={{
-                  background: "conic-gradient(#4CAF50 0% 33%, #FF5733 33% 66%, #FFC107 66% 100%)", // Divide into 3 equal parts
-                }}
-              ></div>
-            </div>
-          </div>
-
-        </div>
-      </section>
     </div>
   );
 }

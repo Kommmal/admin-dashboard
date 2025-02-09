@@ -19,7 +19,7 @@ const Sidebar = () => {
   if (isLoginPage) return null; // Don't render Sidebar on the login page
 
   return (
-    <div className={` fixed top-0 left-0 h-full bg-white rounded-r-lg shadow-lg  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-64' : 'w-16'}`}>
+    <div className={` fixed top-0 z-10 left-0 h-full bg-white rounded-r-lg shadow-lg  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-64' : 'w-16'}`}>
       <div className=" text-xl font-bold mb-6 flex items-center justify-between mt-4">
         <h2 className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Shop.Co</h2>
         <div className=" cursor-pointer text-2xl " onClick={toggleSidebar}>
@@ -42,21 +42,24 @@ const Sidebar = () => {
             <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Products</span>
           </div>
           <div>
-            <ChevronDownIcon size={18} className={`${isHamburgerClicked ? 'block' : 'hidden'} ${isProductClicked ? 'hidden' : "block" }`} onClick={() => setIsProductClicked(true)} />
-            <ChevronDownIcon size={18} className={`${isHamburgerClicked ? 'block' : 'hidden'} ${isProductClicked ? 'block' : "hidden" } rotate-[180deg]`} onClick={() => setIsProductClicked(false)} />
+            <ChevronDownIcon size={18} className={`${isHamburgerClicked ? 'block' : 'hidden'} ${isProductClicked ? 'hidden' : "block"}`} onClick={() => setIsProductClicked(true)} />
+            <ChevronDownIcon size={18} className={`${isHamburgerClicked ? 'block' : 'hidden'} ${isProductClicked ? 'block' : "hidden"} rotate-[180deg]`} onClick={() => setIsProductClicked(false)} />
           </div>
         </div>
         <div className={`${isProductClicked ? 'block' : 'hidden'} ml-5`}>
-        <Link href="/admin/products" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
-        <ListIcon size={18} />
-          <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Product List</span>
-        </Link>
-        <Link href="/admin/addproducts" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
-        <PlusCircle size={18} />
-          <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Add Product</span>
-        </Link> 
+          <Link href="/admin/products" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
+            <ListIcon size={18} />
+            <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Product List</span>
+          </Link>
+          <Link href="/admin/addproducts" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
+            <PlusCircle size={18} />
+            <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Add Product</span>
+          </Link>
         </div>
-        
+        <Link href="/admin/user" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
+          <User size={18} />
+          <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Customers</span>
+        </Link>
       </div>
 
 
