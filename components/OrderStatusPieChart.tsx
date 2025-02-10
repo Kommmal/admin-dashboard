@@ -51,7 +51,7 @@ export function OrderStatusPieChart() {
   const chartData = getStatusData();
 
   return (
-    <Card className="w-[700px] bg-gray-100">
+    <Card className="lg:w-[700px] md:w-[300px] w-[300px] bg-gray-100">
       <CardHeader>
         <CardTitle>Order Status Distribution</CardTitle>
         <CardDescription>Showing percentage of order statuses</CardDescription>

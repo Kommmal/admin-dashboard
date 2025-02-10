@@ -7,19 +7,20 @@ import Link from 'next/link';
 const Sidebar = () => {
   const pathname = usePathname(); // Get the current pathname
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
+  const [show, setShow] = useState(false)
   const [isProductClicked, setIsProductClicked] = useState(false)
 
   const toggleSidebar = () => {
     setIsHamburgerClicked((prevState) => !prevState);
   };
 
-  // Check if the current route is the login page
-  const isLoginPage = pathname === '/login';
+  
+  const isLoginPage = pathname === '/';
 
-  if (isLoginPage) return null; // Don't render Sidebar on the login page
+  if (isLoginPage) return null; 
 
   return (
-    <div className={` fixed top-0 z-10 left-0 h-full bg-white rounded-r-lg shadow-lg  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-64' : 'w-16'}`}>
+    <div className={` hidden fixed top-0 z-10 left-0 h-full bg-white rounded-r-lg shadow-lg  p-4 transition-all duration-300 ease-in-out ${isHamburgerClicked ? 'w-64' : 'w-16'}`}>
       <div className=" text-xl font-bold mb-6 flex items-center justify-between mt-4">
         <h2 className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Shop.Co</h2>
         <div className=" cursor-pointer text-2xl " onClick={toggleSidebar}>

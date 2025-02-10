@@ -47,6 +47,7 @@ export default function Dashboard() {
   const [orderLength, setOrderLength] = useState<number>(0);
   const [filter, setFilter] = useState("Today");
   const [barFilter, setBarFilter] = useState("Today");
+  
 
   useEffect(() => {
     client.fetch(`*[_type == "order"]{
@@ -129,79 +130,81 @@ export default function Dashboard() {
   }, [orders, filter]);
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <h1 className="text-3xl font-semibold text-center mb-10">Shop.ce Dashboard</h1>
+    <div className="max-w-7xl mx-auto p-6 overflow-x-hidden">
+      <h1 className="lg:text-3xl text-xl font-semibold text-center mb-10">Shop.ce Dashboard</h1>
 
       {/* Stats Section */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
+      <section className="grid md:grid-cols-2 grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6 mb-12 ">
+        <div className="bg-gray-100 flex md:gap-4  gap-1 md:p-3 p-2 rounded-lg shadow-md ">
           <div>
-            <Image alt="order png" src={Dollar} width={60} height={60}></Image>
+            <Image alt="order png" src={Dollar} width={60} height={60} className="md:w-16 md:h-16 w-10 h-10"></Image>
           </div>
           <div>
-            <h3 className="text-xl font-semibold mb-1">Total Sale Revenue</h3>
-            <p className="text-3xl font-bold">${totalRevenue.toLocaleString()}</p>
-          </div>
-        </div>
-        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
-          <div>
-            <Image alt="order png" src={Order} width={60} height={60}></Image>
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold mb-1">Total Orders</h3>
-            <p className="text-3xl font-bold">{orderLength}</p>
+            <h3 className="md:text-xl text-sm font-semibold mb-1 xs:text-sm">Total Sale Revenue</h3>
+            <p className="md:text-3xl text-xl font-bold xs:text-xl">${totalRevenue.toLocaleString()}</p>
           </div>
         </div>
-        <div className="bg-gray-100 p-3 flex gap-4 rounded-lg shadow-md ">
+        <div className="bg-gray-100 flex md:gap-4  gap-1 md:p-3 p-2 rounded-lg shadow-md ">
           <div>
-            <Image alt="order png" src={customer} width={60} height={60}></Image>
+            <Image alt="order png" src={Order} width={60} height={60} className="md:w-16 md:h-16 w-10 h-10"></Image>
           </div>
           <div>
-            <h3 className="text-xl font-semibold mb-1">Orders Today</h3>
-            <p className="text-3xl font-bold">{filteredOrders.length}</p>
+            <h3 className="md:text-xl text-sm font-semibold mb-1 xs:text-sm">Total Orders</h3>
+            <p className="md:text-3xl text-xl font-bold xs:text-xl">{orderLength}</p>
           </div>
         </div>
-        <div className="bg-gray-100 flex gap-4 p-3 rounded-lg shadow-md ">
+        <div className="bg-gray-100 flex md:gap-4  gap-1 md:p-3 p-2 rounded-lg shadow-md">
           <div>
-            <Image alt="order png" src={Truck} width={60} height={60}></Image>
+            <Image alt="order png" src={customer} width={60} height={60} className="md:w-16 md:h-16 w-10 h-10"></Image>
           </div>
           <div>
-            <h3 className="text-xl font-semibold mb-1">Order Pending</h3>
-            <p className="text-3xl font-bold">{orders.filter(order => order.status === "Pending").length}</p>
+            <h3 className="md:text-xl text-sm font-semibold mb-1 xs:text-sm">Orders Today</h3>
+            <p className="md:text-3xl text-xl font-bold xs:text-xl">{filteredOrders.length}</p>
+          </div>
+        </div>
+        <div className="bg-gray-100 flex md:gap-4  gap-1 md:p-3 p-2 rounded-lg shadow-md ">
+          <div>
+            <Image alt="order png" src={Truck} width={60} height={60} className="md:w-16 md:h-16 w-10 h-10"></Image>
+          </div>
+          <div>
+            <h3 className="md:text-xl text-sm font-semibold mb-1 xs:text-sm">Order Pending</h3>
+            <p className="md:text-3xl text-xl font-bold xs:text-xl">{orders.filter(order => order.status === "Pending").length}</p>
           </div>
         </div>
       </section>
 
       {/* Charts Section */}
-      <section className="mb-12 flex gap-5">
+      <section className="mb-12 flex md:flex-row flex-col justify-center md:justify-between gap-5 md:h-[400px] lg:h-auto">
         <OrdersBarChart />
         {/* Order Status Distribution Chart */}
         <OrderStatusPieChart />
       </section>
 
       {/* Orders Table */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-medium mb-4">Recent Orders</h2>
-        <table className="min-w-full bg-gray-50 border border-gray-300 rounded-lg shadow-md">
-          <thead className="bg-gray-200">
+      <section className="mb-12 ">
+        <h2 className="md:text-2xl text-xl font-medium mb-4">Recent Orders</h2>
+        <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg ">
+        <table className="min-w-full bg-gray-50 border border-gray-300 rounded-lg shadow-md  xl:text-xl md:text-sm  text-[8px] text-nowrap">
+          <thead className="bg-gray-200 text-center">
             <tr>
-              <th className="py-4 px-2">Product</th>
-              <th className="py-4 px-2">Customer</th>
-              <th className="py-4 px-2">Total</th>
-              <th className="py-4 px-2">Date</th>
-              <th className="py-4 px-2">Payment Method</th>
-              <th className="py-4 px-2">Status</th>
+              <th className="md:py-4 md:px-2 p-2">Product</th>
+              <th className="md:py-4 md:px-2 pl-6 py-2 pr-2">Customer</th>
+              <th className="md:py-4 md:px-2 p-2">Total</th>
+              <th className="md:py-4 md:px-2 p-2">Date</th>
+              <th className="md:py-4 md:px-2 p-2">Payment Method</th>
+              <th className="md:py-4 md:px-2 p-2">Status</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.map(order => (
               <tr key={order._id} className="text-center border-b hover:bg-gray-300">
-                <td className="py-4 px-2 flex items-center gap-2">
+                <td className="md:py-4 md:px-2 p-2 flex items-center gap-2">
                   {order.products?.length > 0 && order.products[0]?.image ? (
-                    <img
+                    <Image
                       src={order.products[0].image}
                       alt={order.products[0]?.name || "Product Image"}
-                      className="w-10 h-10 rounded-md"
+                     width={30} height={30} 
+                     className=" md:w-10 md:h-10 w-5 h-5 rounded-md"
                     />
                   ) : (
                     "N/A"
@@ -212,10 +215,10 @@ export default function Dashboard() {
                   {order.firstName} {order.lastName}
                   <div className="text-xs text-gray-400">{order.email}</div>
                 </td>
-                <td className="py-4 px-2">${order.total}</td>
-                <td className="px-4 py-2">{new Date(order._createdAt).toLocaleDateString()}</td>
-                <td className="py-4 px-2">{order.paymentMethod}</td>
-                <td className="py-4 px-2">
+                <td className="md:py-4 md:px-2 p-2">${order.total}</td>
+                <td className="md:py-4 md:px-2 p-2">{new Date(order._createdAt).toLocaleDateString()}</td>
+                <td className="md:py-4 md:px-2 p-2">{order.paymentMethod}</td>
+                <td className="md:py-4 md:px-2 p-2">
                   <span className={`px-2 py-1 rounded-full text-sm ${order.status === "Shipped" ? "bg-green-100 text-green-600" :
                     order.status === "Pending" ? "bg-yellow-100 text-yellow-600" :
                       order.status === "Delivered" ? "bg-red-100 text-blue-600" :
@@ -228,35 +231,37 @@ export default function Dashboard() {
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
       {/* Top Selling Products Section */}
       <section className="mb-12">
-        <h2 className="text-2xl font-medium mb-4">Top Selling Products</h2>
-        <table className="min-w-full bg-gray-50 border border-gray-200 rounded-lg shadow-md">
-          <thead className="bg-gray-200  ">
+        <h2 className="md:text-2xl text-xl font-medium mb-4">Top Selling Products</h2>
+        <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg ">
+        <table className="min-w-full bg-gray-50 border border-gray-200 rounded-lg shadow-md xl:text-xl md:text-sm  text-[8px] text-nowrap">
+          <thead className="bg-gray-200 text-center ">
             <tr>
-              <th className="p-3">Product</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">SKU</th>
-              <th className="p-3">Stock</th>
-              <th className="p-3">Price</th>
-              <th className="p-3">Status</th>
+              <th className="md:py-4 md:px-2 p-2">Product</th>
+              <th className="md:py-4 md:px-2 p-2">Category</th>
+              <th className="md:py-4 md:px-2 p-2">SKU</th>
+              <th className="md:py-4 md:px-2 p-2">Stock</th>
+              <th className="md:py-4 md:px-2 p-2">Price</th>
+              <th className="md:py-4 md:px-2 p-2">Status</th>
             </tr>
           </thead>
 
           <tbody>
             {topSellingProducts.map((product, index) => (
               <tr key={index} className="border-b border-gray-300" >
-                <td className="p-3 flex items-center gap-2">
+                <td className="md:py-4 md:px-2 p-2 pr-8 flex items-center gap-2">
                   <Image src={product.image} alt={product.name} width={30} height={30} className="rounded-md" />
                   {product.name}
                 </td>
-                <td className="p-3">{product.category}</td>
-                <td className="p-3">{product.sku}</td>
-                <td className="p-3">{product.stock}</td>
-                <td className="p-3">${product.price}</td>
-                <td className="p-3">
+                <td className="md:py-4 md:px-2 p-2">{product.category}</td>
+                <td className="md:py-4 md:px-2 p-2">{product.sku}</td>
+                <td className="md:py-4 md:px-2 p-2">{product.stock}</td>
+                <td className="md:py-4 md:px-2 p-2">${product.price}</td>
+                <td className="md:py-4 md:px-2 p-2">
                   {product.status === "Published" && product.stock >= 5 ? (
                     <span className="bg-green-200 text-green-800 px-2 py-1 rounded">Published</span>
                   ) : product.stock === 0 ? (
@@ -273,6 +278,7 @@ export default function Dashboard() {
             ))}
           </tbody>
         </table>
+        </div>
       </section>
 
 

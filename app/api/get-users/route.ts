@@ -8,9 +8,8 @@ export async function GET() {
 
     });
 
-    const users = response.data; // ✅ Access the `data` array
+    const users = response.data; 
 
-    console.log("Fetched Users:", users); // Debugging log
 
     if (!users || users.length === 0) {
       return NextResponse.json({ message: "No users found" }, { status: 404 });

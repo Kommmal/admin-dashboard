@@ -24,6 +24,4 @@ function assertValue<T>(v: T | undefined, errorMessage: string): T | undefined {
   return v;
 }
 
-console.log('Sanity Token:', process.env.SANITY_TOKEN);
-console.log('Project ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID);
-console.log('Dataset:', process.env.NEXT_PUBLIC_SANITY_DATASET);
+

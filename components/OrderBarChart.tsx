@@ -83,7 +83,7 @@ export function OrdersBarChart() {
   };
 
   return (
-    <Card className="w-[500px] bg-gray-100">
+    <Card className="md:w-[500px]  w-[300px] bg-gray-100 lg:h-[400px] xl:h-auto">
       <CardHeader>
         <CardTitle>Orders Sales Chart</CardTitle>
         <CardDescription>Sales Overview</CardDescription>
@@ -94,7 +94,7 @@ export function OrdersBarChart() {
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
             <YAxis />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel color="white"  />} />
             <Bar dataKey="sales" fill="var(--color-desktop)" radius={8} />
           </BarChart>
         </ChartContainer>
