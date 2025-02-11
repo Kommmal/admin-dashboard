@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import SessionProvider from "@/components/SessionProvider";
+
 
 
 const geistSans = localFont({
@@ -28,20 +30,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <ClerkProvider>
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="">
-        <Sidebar  />
-        <div className="w-auto lg:ml-16">
-        {children}
-        </div>
-        </div>
-        
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <SessionProvider>
+            <div>
+              <div className=" w-full">
+                <Sidebar />
+              </div>
+              <div className="w-auto ">{children}</div>
+            </div>
+          </SessionProvider>
+
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

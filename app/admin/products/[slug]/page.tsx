@@ -116,8 +116,8 @@ const EditProduct = () => {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <div className="overflow-x-hidden flex flex-col  bg-gray-50 border border-gray-100  px-4 py-8">
-            <h1 className="lg:text-3xl text-2xl md:font-bold font-bold">Edit Product</h1>
+        <div className="overflow-x-hidden flex flex-col  bg-gray-50 border border-gray-100  px-4 py-8 w-auto lg:ml-16">
+            <h1 className="lg:text-3xl text-2xl md:font-bold font-bold mb-4">Edit Product</h1>
             <form onSubmit={handleSubmit} className="flex lg:flex-row flex-col gap-5">
                 <div className="flex flex-col gap-4 lg:w-[70%]">
                     <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">

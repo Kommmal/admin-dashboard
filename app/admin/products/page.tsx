@@ -101,14 +101,31 @@ const ProductTable = () => {
 
   };
 
-  const handleDelete = (productId: string) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      setProducts(products.filter(product => product._id !== productId));
+  const handleDelete = async (productId: string) => {
+    try {
+      const res = await fetch(`/api/deleteProduct`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId }),
+      });
+  
+      if (!res.ok) {
+        throw new Error(`Failed to delete product: ${res.status}`);
+      }
+  
+      const data = await res.json();
+      console.log("Product deleted:", data);
+    } catch (error) {
+      console.error("Delete error:", error);
     }
   };
+  
+
 
   return (
-    <div className="overflow-x-hidden min-h-screen flex flex-col gap-4 md:p-6 px-3 py-6 bg-gray-100 w-full">
+    <div className="overflow-x-hidden min-h-screen  flex flex-col gap-4 md:px-3 md:py-6 px-3 py-6 bg-gray-100 w-auto lg:ml-16">
       <div className="flex justify-between">
         <h1 className="lg:text-3xl text-xl font-bold">Product List</h1>
         <div className="flex gap-2 md:hidden">
@@ -133,7 +150,7 @@ const ProductTable = () => {
       </div>
 
       {showFilters && (
-        <div className="bg-white p-4 w-full lg:w-[51%] rounded shadow-md mb-4 flex flex-wrap  gap-4 text-xs md:text-sm">
+        <div className="bg-white p-4 w-full lg:w-[51%] rounded shadow-md mb-4 flex flex-wrap  gap-4 text-sm">
           <select onChange={(e) => setFilterCategory(e.target.value)} className="border p-2 rounded bg-gray-200 ">
             <option value="">All Categories</option>
             <option value="tshirt">T-shirt</option>
@@ -165,55 +182,59 @@ const ProductTable = () => {
           </select>
         </div>
       )}
-    <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg ">
-      <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg xl:text-xl md:text-sm  text-[8px] text-nowrap">
-        <thead>
-          <tr className="bg-gray-100 text-center">
-            <th className="md:py-4 md:px-2 p-2">Product</th>
-            <th className="md:py-4 md:px-2 p-2">Category</th>
-            <th className="md:py-4 md:px-2 p-2">SKU</th>
-            <th className="md:py-4 md:px-2 p-2">Stock</th>
-            <th className="md:py-4 md:px-2 p-2">Price</th>
-            <th className="md:py-4 md:px-2 p-2">Status</th>
-            <th className="md:py-4 md:px-2 p-2">Added</th>
-            <th className="md:py-4 md:px-2 p-2">Action</th>
-          </tr>
-        </thead>
-        <tbody className='w-full'>
-          {currentProducts.map((product) => (
-            <tr key={product._id} className="border-b-2 border-gray-100 hover:bg-gray-50 text-center">
-              <td className="md:py-4 md:px-2 p-2 flex text-left items-center gap-2">
-                <Image src={product.image} alt={product.name} width={30} height={30} className=" md:w-10 md:h-10 w-5 h-5 rounded-md" />
-                {product.name}
-              </td>
-              <td className="p-3">{product.category}</td>
-              <td className="p-3">{product.sku}</td>
-              <td className="p-3">{product.stock}</td>
-              <td className="p-3">${product.price}</td>
-              <td className="p-3">
-                {product.status === "Published" && product.stock >= 5 ? (
-                  <span className="bg-green-200 text-green-800 px-2 py-1 rounded">Published</span>
-                ) : product.stock === 0 ? (
-                  <span className="bg-red-200 text-red-800 px-2 py-1 rounded">Out of Stock</span>
-                ) : product.stock > 0 && product.stock < 5 ? (
-                  <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Low Stock</span>
-                ) : null}
-              </td>
-
-
-              <td className="p-3">{new Date(product._createdAt).toLocaleDateString()}</td>
-              <td className="md:py-4 md:px-2 p-3 flex justify-center gap-2">
-                <Link href={`/admin/products/${product.slug}`}>
-                  <Eye className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-gray-600 hover:text-gray-900" />
-                </Link>
-                <Pencil className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(product)} />
-                <Trash className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-red-600 hover:text-red-900" onClick={() => handleDelete(product._id)} />
-              </td>
+      <div className="w-full overflow-auto bg-white md:m-2  rounded-lg shadow-lg ">
+        <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg  md:text-sm  text-[8px] text-nowrap">
+          <thead>
+            <tr className="bg-gray-100 text-center">
+              <th className="md:py-4 md:px-2 p-2">Product</th>
+              <th className="md:py-4 md:px-2 p-2">Category</th>
+              <th className="md:py-4 md:px-2 p-2">SKU</th>
+              <th className="md:py-4 md:px-2 p-2">Stock</th>
+              <th className="md:py-4 md:px-2 p-2">Price</th>
+              <th className="md:py-4 md:px-2 p-2">Status</th>
+              <th className="md:py-4 md:px-2 p-2">Added</th>
+              <th className="md:py-4 md:px-2 p-2">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-</div>
+          </thead>
+          <tbody className='w-full'>
+            {currentProducts.map((product) => (
+              <tr key={product._id} className="border-b-2 border-gray-100 hover:bg-gray-50 text-center">
+                <td className="md:py-4 md:px-2 p-2 flex text-left items-center gap-2">
+                  <Image src={product.image} alt={product.name} width={30} height={30} className=" md:w-10 md:h-10 w-5 h-5 rounded-md" />
+                  {product.name}
+                </td>
+                <td className="p-3">{product.category}</td>
+                <td className="p-3">{product.sku}</td>
+                <td className="p-3">{product.stock}</td>
+                <td className="p-3">${product.price}</td>
+                <td className="p-3">
+                  {product.status === "Published" && product.stock >= 5 ? (
+                    <span className="bg-green-200 text-green-800 px-2 py-1 rounded">Published</span>
+                  ) : product.stock === 0 ? (
+                    <span className="bg-red-200 text-red-800 px-2 py-1 rounded">Out of Stock</span>
+                  ) : product.stock > 0 && product.stock < 5 ? (
+                    <span className="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Low Stock</span>
+                  ) : null}
+                </td>
+
+
+                <td className="p-3">{new Date(product._createdAt).toLocaleDateString()}</td>
+                <td className="md:py-4 md:px-2 p-3 flex justify-center gap-2">
+                  <Link href={`/admin/products/${product.slug}`}>
+                    <Eye className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-gray-600 hover:text-gray-900" />
+                  </Link>
+                  <Pencil className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(product)} />
+                  <Trash
+                    className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-red-600 hover:text-red-900"
+                    onClick={() => handleDelete(product._id)}
+                  />
+
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
 
       <div className="mt-4 flex justify-between items-center">
@@ -228,7 +249,7 @@ const ProductTable = () => {
         </div>
         <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className='bg-black px-4 py-2 border-2 rounded-md text-white md:block hidden'>Next</button>
         <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className='bg-black px-4 py-2 border-2 rounded-md text-white md:hidden block'>
-        <ChevronDownIcon size={15} className='rotate-[-90deg]' />
+          <ChevronDownIcon size={15} className='rotate-[-90deg]' />
         </button>
       </div>
     </div>

@@ -8,6 +8,10 @@ import customer from "@/public/images/Customer Active.png";
 import Dollar from "@/public/images/Annual Goal.png";
 import Truck from "@/public/images/Services.png";
 import Order from "@/public/images/Services (2).png";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import UserSettings from "@/components/UserSettings";
+
 
 interface Product {
   name: string;
@@ -47,6 +51,8 @@ export default function Dashboard() {
   const [orderLength, setOrderLength] = useState<number>(0);
   const [filter, setFilter] = useState("Today");
   const [barFilter, setBarFilter] = useState("Today");
+  const { data: session, status } = useSession();
+  const router = useRouter();
   
 
   useEffect(() => {
@@ -129,8 +135,15 @@ export default function Dashboard() {
     return filterOrders(barFilter).reduce((sum, order) => sum + order.total, 0);
   }, [orders, filter]);
 
+
+  if (status === "loading") return <p>Loading...</p>;
+  if (!session) {
+    router.push("/");
+    return null;
+  }
+
   return (
-    <div className="max-w-7xl mx-auto p-6 overflow-x-hidden">
+    <div className=" w-auto lg:ml-16 p-6 overflow-x-hidden">
       <h1 className="lg:text-3xl text-xl font-semibold md:text-center md:mb-10 mb-6 ">Dashboard</h1>
 
       {/* Stats Section */}

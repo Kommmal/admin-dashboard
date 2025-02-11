@@ -1,78 +1,52 @@
-"use client"
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
 
-const LoginForm = () => {
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function LoginForm() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-  useEffect(() => {
-    // Ensure useRouter only runs client-side
-    setIsClient(true);
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const result = await signIn("credentials", { email, password, redirect: false });
 
-    // Hardcoded credentials (replace with actual authentication logic)
-    const correctUsername = 'admin@shop.co';
-    const correctPassword = 'admin123';
-
-    if (username === correctUsername && password === correctPassword) {
-      setError(null); // Clear any previous error
-      if (isClient) {
-        router.push('/admin/dashboard'); // Redirect on success
-      }
+    if (result?.error) {
+      setError("Invalid email or password");
     } else {
-      setError('Invalid username or password');
+      router.push("/admin/dashboard");
     }
   };
 
-  if (!isClient) {
-    return null; // Prevent rendering on the server
-  }
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-semibold text-center mb-6">Admin Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            Login
-          </button>
-        </form>
-      </div>
+    <div className="bg-white p-8 rounded-lg shadow-md w-[30%]">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Admin Login</h2>
+      {error && <p className="text-red-500 text-center mb-2">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="mb-4">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded mb-2"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded mb-2"
+          required
+        />
+        <button className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+          Login
+        </button>
+      </form>
     </div>
   );
-};
-
-export default LoginForm;
+}

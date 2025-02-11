@@ -71,7 +71,7 @@ const UsersTable = () => {
     .slice(indexOfFirstUser, indexOfLastUser);
 
   return (
-    <div className="overflow-x-hidden px-3 py-6 bg-gray-100 min-h-screen">
+    <div className="overflow-x-hidden px-3 py-6 bg-gray-100 min-h-screen w-auto lg:ml-16">
       <div className="flex md:justify-between md:flex-row flex-col gap-3 md:items-center mb-4">
         <h2 className="md:text-2xl text-left text-xl font-bold">Customer List</h2>
         <div className="flex md:space-x-2 space-x-3">
@@ -89,7 +89,7 @@ const UsersTable = () => {
         <p>Loading users...</p>
       ) : (
         <div className="w-full overflow-auto bg-white md:m-4 rounded-lg shadow-lg ">
-          <table className="w-full bg-white shadow-md rounded-lg xl:text-xl md:text-xs text-[8px] text-nowrap">
+          <table className="w-full bg-white shadow-md rounded-lg xl:text-sm md:text-xs text-[8px] text-nowrap">
             <thead>
               <tr className="bg-gray-200 text-center">
                 <th className="md:py-4 md:px-2 p-2">Customer Name</th>

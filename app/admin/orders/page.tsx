@@ -94,7 +94,7 @@ const Orders = () => {
   }
 
   return (
-    <div className="overflow-x-hidden min-h-screen flex flex-col gap-4 md:p-6 px-3 py-6 bg-gray-100 w-full">
+    <div className="overflow-x-hidden min-h-screen  flex flex-col gap-4 md: px-3 py-6 bg-gray-100 w-auto lg:ml-16">
       <div className="flex flex-col gap-2">
         <div className="flex justify-between">
           <h1 className="lg:text-3xl text-2xl md:font-bold font-bold">Orders</h1>
@@ -112,7 +112,7 @@ const Orders = () => {
           </Link>
         </div>
       </div>
-      <div className={`flex flex-wrap gap-1  md:gap-4 mb-4 bg-white border-2 border-gray-100 rounded-md lg:w-[73%] xl:w-[51%] p-2 ${show ? "block" : "hidden"} md:block md:text-sm text-xs`}>
+      <div className={`flex md:flex-nowrap flex-wrap gap-2 lg:gap-4 md:gap-4 mb-4 bg-white border-2 border-gray-100 rounded-md lg:w-[73%] xl:w-[51%] p-2 ${show ? "block" : "hidden"} md:block md:text-sm text-xs`}>
         {["All", "Today", "7 Days", "24 Hours", "This Month", "This Year"].map((option) => (
           <button
             key={option}
@@ -120,31 +120,31 @@ const Orders = () => {
               setFilter(option);
               setCurrentPage(1);
             }}
-            className={`md:px-4 md:py-2 p-2 rounded-md ${filter === option ? "bg-black text-white" : "bg-gray-200 text-black"
-              } `}
+            className={`md:px-4 md:py-2 p-2 rounded-md ${filter === option ? "bg-black text-white" : "bg-gray-200 text-black"}`}
           >
             {option}
           </button>
         ))}
       </div>
-      <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg  ">
-        <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg md:text-xl text-[8px]">
+
+      <div className="w-full overflow-auto bg-white md:m-2  rounded-lg shadow-lg  ">
+        <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg md:text-lg text-[8px]">
           <thead>
             <tr className="bg-gray-50 text-center ">
-              <th className="md:py-4 md: px-2">Product</th>
-              <th className="md:py-4 md: px-2 pr-8">Customer</th>
-              <th className="md:py-4 md: px-2">Total</th>
-              <th className="md:py-4 md: px-2">Payment Method</th>
-              <th className="md:py-4 md: px-2">Status</th>
-              <th className="md:py-4 md: px-2">Date</th>
-              <th className="md:py-4 md: px-2">Action</th>
+              <th className="md:py-4 md:px-2">Product</th>
+              <th className="md:py-4 md:px-2 md:pr-2 pr-8">Customer</th>
+              <th className="md:py-4 md:px-2">Total</th>
+              <th className="md:py-4 md:px-2">Payment Method</th>
+              <th className="md:py-4 md:px-2">Status</th>
+              <th className="md:py-4 md:px-2">Date</th>
+              <th className="md:py-4 md:px-2">Action</th>
             </tr>
           </thead>
           <tbody className="w-full">
             {currentOrders.map((order) => (
               <tr key={order._id} className="border-b-2 border-gray-100 hover:bg-gray-50 text-nowrap text-center">
 
-                <td className="md:py-4 md: px-2 flex items-center gap-2">
+                <td className="md:py-4 mdpx-2 flex items-center gap-2">
                   {order.products?.length > 0 && order.products[0]?.image ? (
                     <img
                       src={order.products[0].image}
@@ -156,12 +156,12 @@ const Orders = () => {
                   )}
                   {order.products?.length > 0 ? order.products[0]?.name : "N/A"}
                 </td>
-                <td className="md:py-4 md: pr-10 pl-2 py-2">{order.firstName} {order.lastName}
+                <td className="md:py-4 md:px-2 pr-10 pl-2 py-2">{order.firstName} {order.lastName}
                   <div className="md:text-xs text-[5px] text-gray-400 ">{order.email}</div></td>
-                <td className="md:py-4 md: px-2">${order.total}</td>
-                <td className="md:py-4 md: px-2">{order.paymentMethod}</td>
-                <td className="md:py-4 md: px-2">
-                  <span className={`md:py-4 md: px-2 py-1 rounded-xl md:text-sm text-[8px] ${order.status === "Completed" ? "bg-green-100 text-green-600" :
+                <td className="md:py-4 md:px-2">${order.total}</td>
+                <td className="md:py-4 md:px-2">{order.paymentMethod}</td>
+                <td className="md:py-4 md:px-2">
+                  <span className={`md:py-4 md:px-2 py-1 rounded-xl md:text-sm text-[8px] ${order.status === "Completed" ? "bg-green-100 text-green-600" :
                     order.status === "Pending" ? "bg-yellow-100 text-yellow-600 " :
                       order.status === "Cancelled" ? "bg-red-100 text-red-600" :
                         "bg-gray-100 text-gray-600"

@@ -73,7 +73,7 @@ const OrderDetail = () => {
     if (!order) return <div>Loading...</div>;
 
     return (
-        <div className="overflow-x-hidden min-h-screen flex flex-col gap-6 p-6 bg-gray-100">
+        <div className="overflow-x-hidden min-h-screen flex flex-col gap-6 p-6 bg-gray-100 w-auto lg:ml-16">
             <div className="flex flex-col gap-2">
                 <h1 className="md:text-3xl text-2xl md:font-bold font-bold">Order Detail</h1>
                 <div className="flex gap-2 items-center">
@@ -118,12 +118,12 @@ const OrderDetail = () => {
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-xl font-semibold">Customer</h2>
                     <div className="flex justify-between py-2">
-                        <p><strong>Customer</strong></p>
+                        <p><strong>Customer:</strong></p>
                         <p>{order.firstName}{order.lastName}</p>
                     </div>
                     <div className="flex justify-between py-2">
                         <p><strong>Email:</strong></p>
-                        <p>{order.email}</p>
+                        <p className="text-wrap">{order.email}</p>
                     </div>
                     <div className="flex justify-between py-2">
                         <p><strong>Phone </strong></p>
@@ -133,11 +133,11 @@ const OrderDetail = () => {
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-xl font-semibold">Address</h2>
                     <div className=" py-2">
-                        <p><strong>Billing Adress</strong></p>
+                        <p><strong>Billing Adress:</strong></p>
                         <p>{order.address}</p>
                     </div>
                     <div className="  py-2">
-                        <p><strong>Shipping Adress</strong></p>
+                        <p><strong>Shipping Adress:</strong></p>
                         <p>{order.address}</p>
                     </div>
 
@@ -145,8 +145,8 @@ const OrderDetail = () => {
             </div>
             <div className="bg-white border border- rounded-lg shadow-lg w-full ">
                 <h2 className="text-xl p-6 font-semibold">Products</h2>
-                <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg">
-                <table className="w-full bg-white border rounded-lg md:text-xl text-sm text-nowrap">
+                <div className="w-full overflow-auto bg-white  rounded-lg shadow-lg">
+                <table className="w-full bg-white border rounded-lg  text-sm text-nowrap">
                     <thead className="text-center">
                         <tr className="bg-gray-100 border-gray-300">
                             <th className="p-3">Product</th>

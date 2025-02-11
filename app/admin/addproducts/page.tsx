@@ -150,7 +150,7 @@ const AddProducts = () => {
 
 
   return (
-    <div className='overflow-x-hidden flex flex-col lg:my-8 lg:mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
+    <div className='overflow-x-hidden flex flex-col  lg:ml-20 lg:my-8 lg:mr-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
       <h1 className='md:text-3xl text-xl font-bold md:font-bold'>Add Product</h1>
       <div className='flex justify-between itens-center mt-2 mb-8'>
         <div className="flex gap-2 items-center">
