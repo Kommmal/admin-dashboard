@@ -4,10 +4,10 @@ import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 import { OrdersBarChart } from "@/components/OrderBarChart";
 import { OrderStatusPieChart } from "@/components/OrderStatusPieChart";
-import customer from "@/src/assests/images/Customer Active.png";
-import Dollar from "@/src/assests/images/Annual Goal.png";
-import Truck from "@/src/assests/images/Services.png";
-import Order from "@/src/assests/images/Services (2).png";
+import customer from "@/public/images/Customer Active.png";
+import Dollar from "@/public/images/Annual Goal.png";
+import Truck from "@/public/images/Services.png";
+import Order from "@/public/images/Services (2).png";
 
 interface Product {
   name: string;
@@ -131,7 +131,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 overflow-x-hidden">
-      <h1 className="lg:text-3xl text-xl font-semibold text-center mb-10">Shop.ce Dashboard</h1>
+      <h1 className="lg:text-3xl text-xl font-semibold md:text-center md:mb-10 mb-6 ">Dashboard</h1>
 
       {/* Stats Section */}
       <section className="grid md:grid-cols-2 grid-cols-2 gap-2 lg:grid-cols-4 lg:gap-6 mb-12 ">

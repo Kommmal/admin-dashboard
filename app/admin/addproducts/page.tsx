@@ -150,37 +150,37 @@ const AddProducts = () => {
 
 
   return (
-    <div className='flex flex-col my-8 mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
-      <h1 className='text-4xl font-semibold'>Add Product</h1>
+    <div className='overflow-x-hidden flex flex-col lg:my-8 lg:mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8'>
+      <h1 className='md:text-3xl text-xl font-bold md:font-bold'>Add Product</h1>
       <div className='flex justify-between itens-center mt-2 mb-8'>
         <div className="flex gap-2 items-center">
-          <Link href="/admin/dashboard" className=" active:text-gray-400  ">Dashboard</Link>
-          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
-          <Link href="/admin/products" className=" active:text-gray-400 ">Product List</Link>
-          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg]" />
-          <Link href="/admin/addproducts" className="  active:text-gray-400 ">Add Product</Link>
+          <Link href="/admin/dashboard" className=" active:text-gray-400 md:text-lg text-xs ">Dashboard</Link>
+          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg] md:text-lg text-xs" />
+          <Link href="/admin/products" className=" active:text-gray-400 md:text-lg text-xs">Product List</Link>
+          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg] md:text-lg text-xs" />
+          <Link href="/admin/addproducts" className="  active:text-gray-400 md:text-lg text-xs">Add Product</Link>
         </div>
 
       </div>
-      <form onSubmit={handleSubmit} className="flex gap-5">
-        <div className='flex flex-col gap-4 w-[70%]'>
+      <form onSubmit={handleSubmit} className="flex lg:flex-row flex-col gap-5">
+        <div className='flex flex-col gap-4 lg:w-[70%]'>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>General Information</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold '>General Information</h1>
             <div className='' >
-              <h1 className='font-semibold text-gray-500'>Product Name</h1>
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Product Name</h1>
               <input type="text" placeholder='Type product name here...' name='name' value={product.name} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
             </div>
             <div className='' >
-              <h1 className='font-semibold text-gray-500'>Slug</h1>
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Slug</h1>
               <input type="text" placeholder='example: black-tshirt' name="slug" value={product.slug} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
             </div>
             <div className='' >
-              <h1 className='font-semibold text-gray-500'>Description</h1>
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Description</h1>
               <textarea rows={7} placeholder='Type product name here...' name="description" value={product.description} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl  ' />
             </div>
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>Media</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Media</h1>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center flex flex-col items-center justify-center w-full max-w-full bg-gray-50 hover:bg-gray-100 transition">
               {imagePreview ? (
                 <img src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" />
@@ -208,38 +208,37 @@ const AddProducts = () => {
             </div>
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>Pricing</h1>
-
-            <div className='flex gap-4  w-full' >
-              <div className='w-[50%]' >
-                <h1 className='font-semibold text-gray-500' >Base Price</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Pricing</h1>
+            <div className='flex gap-4 md:flex-row flex-col w-full' >
+              <div className='md:marker:w-[50%]' >
+                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500' >Base Price</h1>
                 <input type="text" placeholder='$ Type price here...' name="price" value={product.price} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
-              <div className='w-[50%]'>
-                <h1 className='font-semibold text-gray-500' >Discount</h1>
+              <div className='md:w-[50%]'>
+                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500' >Discount</h1>
                 <input type="text" placeholder='Type product discount here...' name="discountPercent" value={product.discountPercent} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
             </div>
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>Inventory</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Inventory</h1>
 
-            <div className='flex gap-4  w-full' >
-              <div className='w-[50%]' >
-                <h1 className='font-semibold text-gray-500' >SKU</h1>
+            <div className='flex gap-4 md:flex-row flex-col w-full' >
+              <div className='md:w-[50%]' >
+                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500' >SKU</h1>
                 <input type="text" placeholder='$ Type base SKU here...' name="sku" value={product.sku} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
-              <div className='w-[50%]'>
-                <h1 className='font-semibold text-gray-500' >Quantity</h1>
+              <div className='md:w-[50%]'>
+                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500' >Quantity</h1>
                 <input type="text" placeholder='Type product quantity here...' name="stock" value={product.stock} onChange={handleChange} required className='w-full border border-gray-100 bg-gray-50 p-2 rounded-xl' />
               </div>
             </div>
           </div>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>Colors & Sizes</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Colors & Sizes</h1>
             <div className='flex flex-col gap-2  w-full' >
-              <h1 className='font-semibold text-gray-500'>Colors</h1>
-              <div className="flex gap-3">
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Colors</h1>
+              <div className="flex flex-wrap gap-3 md:text-[16px] text-sm">
                 {["Red", "Blue", "Green", "Black", "White"].map((color) => (
                   <button
                     key={color}
@@ -253,8 +252,8 @@ const AddProducts = () => {
               </div>
             </div>
             <div className='flex flex-col gap-2  w-full'>
-              <h1 className='font-semibold text-gray-500'>Sizes</h1>
-              <div className="flex gap-3">
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Sizes</h1>
+              <div className="flex flex-wrap gap-3 md:text-[16px] text-sm">
                 {["S", "M", "L", "XL"].map((size) => (
                   <button
                     key={size}
@@ -269,11 +268,11 @@ const AddProducts = () => {
             </div>
           </div>
         </div>
-        <div className="w-[30%] flex gap-4 flex-col">
+        <div className="lg:w-[30%] flex gap-4 flex-col">
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-            <h1 className='text-2xl font-semibold'>Category</h1>
+            <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Category</h1>
             <div className='' >
-              <h1 className='font-semibold text-gray-500'>Product Category</h1>
+              <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Product Category</h1>
               <select
                 name="category"
                 value={product.category}
@@ -290,9 +289,9 @@ const AddProducts = () => {
               </select>
             </div>
             <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
-              <h1 className='text-2xl font-semibold'>Tags</h1>
+              <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Tags</h1>
               <div className=''>
-                <h1 className='font-semibold text-gray-500'>Product Tags</h1>
+                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500'>Product Tags</h1>
                 <select
                   name="tags"
                   value={product.tags}

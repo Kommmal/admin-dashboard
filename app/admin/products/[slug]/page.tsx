@@ -72,11 +72,11 @@ const EditProduct = () => {
         setProduct((prev) =>
             prev
                 ? {
-                      ...prev,
-                      [type]: prev[type].includes(value)
-                          ? prev[type].filter((item) => item !== value)
-                          : [...prev[type], value],
-                  }
+                    ...prev,
+                    [type]: prev[type].includes(value)
+                        ? prev[type].filter((item) => item !== value)
+                        : [...prev[type], value],
+                }
                 : prev
         );
     };
@@ -93,7 +93,7 @@ const EditProduct = () => {
                 discountPercent: parseFloat(product.discountPercent) || 0,
                 stock: parseInt(product.stock),
                 slug: { current: product.slug },
-                status, 
+                status,
                 category: product.category,
                 tags: product.tags,
                 new: product.new,
@@ -116,129 +116,168 @@ const EditProduct = () => {
     if (loading) return <p>Loading...</p>;
 
     return (
-        <div className="flex flex-col my-8 mx-4 bg-gray-50 border border-gray-100 rounded-lg px-4 py-8">
-            <h1 className="text-4xl font-semibold">Edit Product</h1>
-            <form onSubmit={handleSubmit} className="flex gap-5">
-                <div className="flex flex-col gap-4 w-[70%]">
+        <div className="overflow-x-hidden flex flex-col  bg-gray-50 border border-gray-100  px-4 py-8">
+            <h1 className="lg:text-3xl text-2xl md:font-bold font-bold">Edit Product</h1>
+            <form onSubmit={handleSubmit} className="flex lg:flex-row flex-col gap-5">
+                <div className="flex flex-col gap-4 lg:w-[70%]">
                     <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
                         <h1 className="text-2xl font-semibold">General Information</h1>
-                        <input
-                            type="text"
-                            name="name"
-                            value={product?.name || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
-                        <textarea
-                            name="description"
-                            value={product?.description || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
+                        <div>
+                            <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2'>Product Name</h1>
+                            <input
+                                type="text"
+                                name="name"
+                                value={product?.name || ""}
+                                onChange={handleChange}
+                                required
+                                className="w-full border p-2 rounded-xl"
+                            />
+                        </div>
+                        <div>
+                            <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2'>Description</h1>
+                            <textarea
+                                name="description"
+                                value={product?.description || ""}
+                                onChange={handleChange}
+                                required
+                                rows={7}
+                                className="w-full border p-2 rounded-xl"
+                            />
+                        </div>
                     </div>
 
-                    <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
+                    <div className="bg-white flex flex-col justify-center items-center gap-4 border border-gray-100 rounded-lg px-4 py-8">
                         <h1 className="text-2xl font-semibold">Media</h1>
                         {imagePreview ? (
                             <img src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" />
                         ) : (
-                            <ImageIcon className="w-10 h-10" />
+                            <>
+                                <ImageIcon className="w-10 h-10" />
+                                <p className="text-gray-500">Drag and drop image here, or click add image</p>
+                            </>
                         )}
                     </div>
 
-                    <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
-                        <h1 className="text-2xl font-semibold">Pricing</h1>
-                        <input
-                            type="text"
-                            name="price"
-                            value={product?.price || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
-                        <input
-                            type="text"
-                            name="discountPercent"
-                            value={product?.discountPercent || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
+                    <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+                        <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Pricing</h1>
+                        <div className='flex gap-4 md:flex-row flex-col w-full' >
+                            <div className='md:w-[50%]' >
+                                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500' >Base Price</h1>
+                                <input
+                                    type="text"
+                                    name="price"
+                                    value={product?.price || ""}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border p-2 rounded-xl"
+                                />
+                            </div>
+                            <div className='md:w-[50%]' >
+                                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2' >Discount</h1>
+                                <input
+                                    type="text"
+                                    name="discountPercent"
+                                    value={product?.discountPercent || ""}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border p-2 rounded-xl"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
-                        <h1 className="text-2xl font-semibold">Inventory</h1>
-                        <input
-                            type="text"
-                            name="sku"
-                            value={product?.sku || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
-                        <input
-                            type="text"
-                            name="stock"
-                            value={product?.stock || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        />
+                    <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+                        <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Inventory</h1>
+                        <div className='flex gap-4 md:flex-row flex-col w-full' >
+                            <div className='md:w-[50%]' >
+                                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2' >SKU</h1>
+                                <input
+                                    type="text"
+                                    name="sku"
+                                    value={product?.sku || ""}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border p-2 rounded-xl"
+                                />
+                            </div>
+                            <div className='md:w-[50%]'>
+                                <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2' >Quantity</h1>
+                                <input
+                                    type="text"
+                                    name="stock"
+                                    value={product?.stock || ""}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full border p-2 rounded-xl"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
                         <h1 className="text-2xl font-semibold">Colors & Sizes</h1>
-                        <div className="flex gap-3">
-                            {["Red", "Blue", "Green", "Black", "White"].map((color) => (
-                                <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => toggleSelection("colors", color)}
-                                    className={`p-2 rounded-lg border ${
-                                        product?.colors.includes(color) ? "bg-black text-white" : "bg-gray-200 text-gray-800"
-                                    }`}
-                                >
-                                    {color}
-                                </button>
-                            ))}
+                        <div className='flex flex-col gap-2  w-full' >
+                            <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2'>Colors</h1>
+                            <div className="flex flex-wrap gap-3 md:text-[16px] text-sm">
+                                    {["Red", "Blue", "Green", "Black", "White"].map((color) => (
+                                        <button
+                                            key={color}
+                                            type="button"
+                                            onClick={() => toggleSelection("colors", color)}
+                                            className={`p-2 rounded-lg border ${product?.colors.includes(color) ? "bg-black text-white" : "bg-gray-200 text-gray-800"
+                                                }`}
+                                        >
+                                            {color}
+                                        </button>
+                                    ))}
+                            </div>
                         </div>
-                        <div className="flex gap-3 mt-3">
-                            {["S", "M", "L", "XL"].map((size) => (
-                                <button
-                                    key={size}
-                                    type="button"
-                                    onClick={() => toggleSelection("sizes", size)}
-                                    className={`p-2 rounded-lg border ${
-                                        product?.sizes.includes(size) ? "bg-black text-white" : "bg-gray-200 text-gray-800"
-                                    }`}
-                                >
-                                    {size}
-                                </button>
-                            ))}
+                        <div className='flex flex-col gap-2  w-full'>
+                            <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2'>Sizes</h1>
+                            <div className="flex flex-wrap gap-3 md:text-[16px] text-sm">
+                                {["S", "M", "L", "XL"].map((size) => (
+                                    <button
+                                        key={size}
+                                        type="button"
+                                        onClick={() => toggleSelection("sizes", size)}
+                                        className={`p-2 rounded-lg border ${product?.sizes.includes(size) ? "bg-black text-white" : "bg-gray-200 text-gray-800"
+                                            }`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="w-[30%] flex flex-col gap-4">
-                    <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
-                        <h1 className="text-2xl font-semibold">Category</h1>
-                        <select
-                            name="category"
-                            value={product?.category || ""}
-                            onChange={handleChange}
-                            required
-                            className="w-full border p-2 rounded-xl"
-                        >
-                            <option value="">Select Category</option>
-                            <option value="tshirt">T-Shirt</option>
-                            <option value="jeans">Jeans</option>
-                        </select>
-                    </div>
+                <div className="lg:w-[30%] flex gap-4 flex-col">
+                    <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+                        <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Category</h1>
+                        <div className='' >
+                            <h1 className='md:font-semibold md:text-[16px] font-semibold text-sm text-gray-500 mb-2'>Product Category</h1>
+                            <select
+                                name="category"
+                                value={product?.category || ""}
+                                onChange={handleChange}
+                                required
+                                className="w-full border p-2 rounded-xl"
+                            >
+                                <option value="" className="text-black">Select Category</option>
+                                <option value="tshirt" className="text-black">T-Shirt</option>
+                                <option value="short" className="text-black">Short</option>
+                                <option value="jeans" className="text-black">Jeans</option>
+                                <option value="hoodie" className="text-black">Hoodie</option>
+                                <option value="shirt" className="text-black">Shirt</option>
+                            </select>
+                        </div>
 
-                    <div className="bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8">
-                        <h1 className="text-2xl font-semibold">Status</h1>
+                    </div>
+                
+
+                <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
+                    <div className="flex flex-col ">
+                        <h3 className="text-lg font-semibold">Status</h3>
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
@@ -249,12 +288,13 @@ const EditProduct = () => {
                         </select>
                     </div>
 
-                    <button type="submit" disabled={loading} className="bg-black text-white px-4 py-2 rounded-lg">
+                    <button type="submit" disabled={loading} className="bg-black text-white px-4 py-2 rounded-lg md:w-[50%] mx-auto lg:w-full w-full">
                         {loading ? "Updating..." : "Update Product"}
                     </button>
                 </div>
-            </form>
-        </div>
+                </div>
+            </form >
+        </div >
     );
 };
 

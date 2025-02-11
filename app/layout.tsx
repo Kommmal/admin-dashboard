@@ -33,7 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="w-full">
+        <div className="">
         <Sidebar  />
         <div className="w-auto lg:ml-16">
         {children}

@@ -1,133 +1,204 @@
-"use client"
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { clerkClient } from "@clerk/clerk-sdk-node";
+"use client";
+import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
+import { ChevronDownIcon, Eye, Pencil } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
-import { ChevronDownIcon } from "lucide-react";
 
-interface Order{
-  _id: string;
-  email:string;
+interface Product {
+  name: string;
+  image?: string;
 }
 
-interface User{
-  id: string;
+interface Order {
+  _id: string;
   firstName: string;
   lastName: string;
-  emailAddresses:string[];
-  emailAddress: string[];
-  banned: boolean;
-  locked: boolean;
-  orderQuantity: number;
-  imageUrl: string;
-  phoneNumber: number;
+  total: number;
+  paymentMethod: string;
+  email: string;
+  status: string;
+  _createdAt: string;
+  products: Product[];
 }
 
-const UsersTable = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const usersPerPage = 5;
-    
-    useEffect(() => {
-      const fetchUsersAndOrders = async () => {
-        try {
-          const usersRes = await fetch("/api/get-users");
-          const usersData = await usersRes.json();
-          setUsers(usersData || []);
-  
-          const ordersRes = await client.fetch("*[_type == 'order']");
-          setOrders(ordersRes || []);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUsersAndOrders();
-    }, []);
 
-    const paginate = (pageNumber: number) => {
-      setCurrentPage(pageNumber);
+const Orders = () => {
+  const [data, setData] = useState<Order[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState("All");
+  const [show, setShow] = useState<boolean>(false);
+
+  const ordersPerPage = 10;
+  useEffect(() => {
+    const fetchData = async () => {
+      const query = `*[_type == "order"]{
+        _id,
+        firstName,
+        lastName,
+        email,
+        paymentMethod,
+        status,
+        total,
+        _createdAt,
+        products[] {
+          name,
+          image,
+    }
+          }`;
+      const result = await client.fetch(query);
+      setData(result);
     };
+    fetchData();
+  }, []);
 
-    const totalPages = Math.ceil(users.length / usersPerPage);
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    
-    const filteredUsers = users.map(user => {
-      const userEmail = user.emailAddresses?.[0]?.emailAddress || "";
-      const userOrders = orders.filter(order => order.email === userEmail);
-      return {
-        ...user,
-        orderQuantity: userOrders.length || 0,
-        status: user.banned || user.locked ? "Blocked" : "Active"
-      };
-    }).filter(user => user.firstName?.toLowerCase().includes(search.toLowerCase()))
-      .slice(indexOfFirstUser, indexOfLastUser);
+  const filterData = (filter: string) => {
+    const now = new Date();
+    if (filter === "Today") {
+      return data.filter(
+        (order) => new Date(order._createdAt).toDateString() === now.toDateString()
+      );
+    } else if (filter === "7 Days") {
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 7);
+      return data.filter((order) => new Date(order._createdAt) >= weekAgo);
+    } else if (filter === "24 Hours") {
+      const dayAgo = new Date(now);
+      dayAgo.setHours(now.getHours() - 24);
+      return data.filter((order) => new Date(order._createdAt) >= dayAgo);
+    } else if (filter === "This Month") {
+      return data.filter(
+        (order) =>
+          new Date(order._createdAt).getMonth() === now.getMonth() &&
+          new Date(order._createdAt).getFullYear() === now.getFullYear()
+      );
+    } else if (filter === "This Year") {
+      return data.filter(
+        (order) => new Date(order._createdAt).getFullYear() === now.getFullYear()
+      );
+    } else {
+      return data;
+    }
+  };
+  const filteredData = useMemo(() => filterData(filter), [filter, data]);
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredData.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredData.length / ordersPerPage);
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const handleView = (orderId: string) => {
+    alert(`Viewing details for order ID: ${orderId}`)
+  }
+  const handleEdit = (orderId: string) => {
+    alert(`Editing order ID: ${orderId}`);
+  }
 
-    return (
-      <div className="overflow-x-hidden px-3 py-6 bg-gray-100 min-h-screen">
-        <div className="flex md:justify-between md:flex-row flex-col gap-3 md:items-center mb-4">
-          <h2 className="md:text-2xl text-left text-xl font-bold">Customer List</h2>
-          <div className="flex md:space-x-2 space-x-3">
-            <Input
-              type="text"
-              placeholder="Search customer..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border p-2 rounded md:text-sm text:xs"
-            />
-            <Button className="bg-black text-white px-4 py-2 rounded md:text-sm text:xs">+ Add Customer</Button>
+  return (
+    <div className="overflow-x-hidden min-h-screen flex flex-col gap-4 md:p-6 px-3 py-6 bg-gray-100 w-full">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between">
+          <h1 className="lg:text-3xl text-2xl md:font-bold font-bold">Orders</h1>
+          <div className="flex gap-2 md:hidden">
+            <button className="bg-black text-white px-4 py-2 rounded text-xs md:text-sm" onClick={() => setShow(!show)}>Dates</button>
           </div>
         </div>
-        {loading ? (
-          <p>Loading users...</p>
-        ) : (
-          <div className="w-full overflow-auto bg-white md:m-4 rounded-lg shadow-lg ">
-            <table className="w-full bg-white shadow-md rounded-lg xl:text-xl md:text-sm text-[8px] text-nowrap">
-              <thead>
-                <tr className="bg-gray-200 text-center">
-                  <th className="md:py-4 md:px-2 p-2">Customer Name</th>
-                  <th className="md:py-4 md:px-2 pl-6 py-2 pr-2">Email</th>
-                  <th className="md:py-4 md:px-2 p-2">Orders</th>
-                  <th className="md:py-4 md:px-2 p-2">Balance</th>
-                  <th className="md:py-4 md:px-2 p-2">Status</th>
-                  <th className="md:py-4 md:px-2 p-2">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b text-center">
-                    <td className="md:py-4 md:px-2 p-2 flex gap-2 items-center">
-                      <Image alt="userImage" src={user.imageUrl} height={30} width={40} className="rounded-full md:w-10 md:h-10 w-5 h-5 "/>
-                      {user.firstName} {user.lastName}
-                    </td>
-                    <td className="md:py-4 md:px-2 p-2 pr-8">{user.emailAddresses?.[0]?.emailAddress || "N/A"}</td>
-                    <td className="md:py-4 md:px-2 p-2">{user.orderQuantity}</td>
-                    <td className="md:py-4 md:px-2 p-2">${(Math.random() * 1000).toFixed(2)}</td>
-                    <td className={`md:py-4 md:px-2 p-2 ${user.status === "Active" ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>{user.status}</td>
-                    <td className="md:py-4 md:px-2 p-2">{new Date().toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="flex justify-between items-center gap-2 mt-4">
-          <Button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>Previous</Button>
-          {[...Array(totalPages)].map((_, index) => (
-            <Button key={index} onClick={() => paginate(index + 1)}>{index + 1}</Button>
-          ))}
-          <Button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>Next</Button>
+        <div className="flex gap-2 items-center">
+          <Link href="/admin/dashboard" className="text-blue-600 hover:underline md:text-lg text-xs">
+            Dashboard
+          </Link>
+          <ChevronDownIcon size={16} color="grey" className="rotate-[-90deg] md:text-lg text-xs" />
+          <Link href="/admin/orders" className="text-gray-500 hover:underline md:text-lg text-xs">
+            Orders
+          </Link>
         </div>
       </div>
-    );
-  };
+      <div className={`flex flex-wrap gap-1  md:gap-4 mb-4 bg-white border-2 border-gray-100 rounded-md lg:w-[73%] xl:w-[51%] p-2 ${show ? "block" : "hidden"} md:block md:text-sm text-xs`}>
+        {["All", "Today", "7 Days", "24 Hours", "This Month", "This Year"].map((option) => (
+          <button
+            key={option}
+            onClick={() => {
+              setFilter(option);
+              setCurrentPage(1);
+            }}
+            className={`md:px-4 md:py-2 p-2 rounded-md ${filter === option ? "bg-black text-white" : "bg-gray-200 text-black"
+              } `}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+      <div className="w-full overflow-auto bg-white md:m-4  rounded-lg shadow-lg  ">
+        <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg md:text-xl text-[8px]">
+          <thead>
+            <tr className="bg-gray-50 text-center ">
+              <th className="md:py-4 md: px-2">Product</th>
+              <th className="md:py-4 md: px-2 pr-8">Customer</th>
+              <th className="md:py-4 md: px-2">Total</th>
+              <th className="md:py-4 md: px-2">Payment Method</th>
+              <th className="md:py-4 md: px-2">Status</th>
+              <th className="md:py-4 md: px-2">Date</th>
+              <th className="md:py-4 md: px-2">Action</th>
+            </tr>
+          </thead>
+          <tbody className="w-full">
+            {currentOrders.map((order) => (
+              <tr key={order._id} className="border-b-2 border-gray-100 hover:bg-gray-50 text-nowrap text-center">
 
-  export default UsersTable;
+                <td className="md:py-4 md: px-2 flex items-center gap-2">
+                  {order.products?.length > 0 && order.products[0]?.image ? (
+                    <img
+                      src={order.products[0].image}
+                      alt={order.products[0]?.name || "Product Image"}
+                      className="md:w-10 md:h-10 w-5 h-5 rounded-md"
+                    />
+                  ) : (
+                    "N/A"
+                  )}
+                  {order.products?.length > 0 ? order.products[0]?.name : "N/A"}
+                </td>
+                <td className="md:py-4 md: pr-10 pl-2 py-2">{order.firstName} {order.lastName}
+                  <div className="md:text-xs text-[5px] text-gray-400 ">{order.email}</div></td>
+                <td className="md:py-4 md: px-2">${order.total}</td>
+                <td className="md:py-4 md: px-2">{order.paymentMethod}</td>
+                <td className="md:py-4 md: px-2">
+                  <span className={`md:py-4 md: px-2 py-1 rounded-xl md:text-sm text-[8px] ${order.status === "Completed" ? "bg-green-100 text-green-600" :
+                    order.status === "Pending" ? "bg-yellow-100 text-yellow-600 " :
+                      order.status === "Cancelled" ? "bg-red-100 text-red-600" :
+                        "bg-gray-100 text-gray-600"
+                    }`}>
+                    {order.status}
+                  </span>
+                </td>
+                <td className="px-4 py-2">{new Date(order._createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-2 flex justify-center gap-2 md:text-sm text-xs">
+                  <Link href={`/admin/orders/${order._id}`}>
+                    <Eye className="md:w-5 w-3 md:h-5 h-3  cursor-pointer text-gray-600 hover:text-gray-900 " />
+                  </Link>
+                  <Pencil className="md:w-5 w-3 md:h-5 h-3  cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(order._id)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-4 flex justify-between items-center">
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='bg-black px-4 py-2 border-2 rounded-md text-white md:block hidden'>Previous</button>
+        <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='bg-black px-4 py-2 border-2 rounded-md text-white md:hidden block'>
+          <ChevronDownIcon size={15} className='rotate-[90deg]' />
+        </button>
+        <div className="md:flex md:gap-4 hidden">
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+            <button key={page} onClick={() => paginate(page)} className={`${currentPage === page ? "bg-black text-white" : "bg-gray-200"} rounded-md px-2 py-1`}>{page}</button>
+          ))}
+        </div>
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className='bg-black px-4 py-2 border-2 rounded-md text-white md:block hidden'>Next</button>
+        <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} className='bg-black px-4 py-2 border-2 rounded-md text-white md:hidden block'>
+          <ChevronDownIcon size={15} className='rotate-[-90deg]' />
+        </button>
+      </div>
+
+    </div>
+  );
+};
+export default Orders;
