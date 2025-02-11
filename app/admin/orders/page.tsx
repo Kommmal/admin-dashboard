@@ -132,7 +132,7 @@ const Orders = () => {
           <thead>
             <tr className="bg-gray-50 text-center ">
               <th className="md:py-4 md:px-2">Product</th>
-              <th className="md:py-4 md:px-2 md:pr-2 pr-8">Customer</th>
+              <th className="md:py-4 md:px-2 md:pr-2 pl-10">Customer</th>
               <th className="md:py-4 md:px-2">Total</th>
               <th className="md:py-4 md:px-2">Payment Method</th>
               <th className="md:py-4 md:px-2">Status</th>
@@ -156,7 +156,7 @@ const Orders = () => {
                   )}
                   {order.products?.length > 0 ? order.products[0]?.name : "N/A"}
                 </td>
-                <td className="md:py-4 md:px-2 pr-10 pl-2 py-2">{order.firstName} {order.lastName}
+                <td className="md:py-4 md:px-2 pl-10 pr-2 py-2">{order.firstName} {order.lastName}
                   <div className="md:text-xs text-[5px] text-gray-400 ">{order.email}</div></td>
                 <td className="md:py-4 md:px-2">${order.total}</td>
                 <td className="md:py-4 md:px-2">{order.paymentMethod}</td>

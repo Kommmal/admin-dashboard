@@ -22,7 +22,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md w-[30%]">
+    <div className="bg-white p-8 rounded-lg shadow-md lg:w-[30%] md:w-[50%] w-[90%]">
       <h2 className="text-2xl font-semibold mb-4 text-center">Admin Login</h2>
       {error && <p className="text-red-500 text-center mb-2">{error}</p>}
 
