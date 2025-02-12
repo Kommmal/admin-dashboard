@@ -8,7 +8,6 @@ import customer from "@/public/images/Customer Active.png";
 import Dollar from "@/public/images/Annual Goal.png";
 import Truck from "@/public/images/Services.png";
 import Order from "@/public/images/Services (2).png";
-import { useSession, signOut } from "next-auth/react";
 
 
 
@@ -49,9 +48,7 @@ export default function Dashboard() {
   const [topSellingProducts, setTopSellingProducts] = useState<TopSelling[]>([]);
   const [orderLength, setOrderLength] = useState<number>(0);
   const [filter, setFilter] = useState("Today");
-  const [barFilter, setBarFilter] = useState("Today");
  
-  
 
   useEffect(() => {
     client.fetch(`*[_type == "order"]{
@@ -103,35 +100,6 @@ export default function Dashboard() {
   const totalRevenue = useMemo(() => {
     return orders.reduce((sum, order) => sum + order.total, 0);
   }, [orders]);
-
-
-  const filterOrders = (barFilter: string) => {
-    const now = new Date();
-    return orders.filter((order) => {
-      const orderDate = new Date(order._createdAt);
-
-      if (filter === "Today") {
-        return orderDate.toDateString() === now.toDateString();
-      }
-      if (filter === "7 Days") {
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(now.getDate() - 7);
-        return orderDate >= sevenDaysAgo;
-      }
-      if (filter === "Month") {
-        return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
-      }
-      if (filter === "Year") {
-        return orderDate.getFullYear() === now.getFullYear();
-      }
-      return true;
-    });
-  };
-
-  // Compute sales based on filtered orders
-  const totalSales = useMemo(() => {
-    return filterOrders(barFilter).reduce((sum, order) => sum + order.total, 0);
-  }, [orders, filter]);
 
 
 

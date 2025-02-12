@@ -86,12 +86,8 @@ const Orders = () => {
   const currentOrders = filteredData.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(filteredData.length / ordersPerPage);
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-  const handleView = (orderId: string) => {
-    alert(`Viewing details for order ID: ${orderId}`)
-  }
-  const handleEdit = (orderId: string) => {
-    alert(`Editing order ID: ${orderId}`);
-  }
+  
+
 
   return (
     <div className="overflow-x-hidden min-h-screen  flex flex-col gap-4 md: px-3 py-6 bg-gray-100 w-auto lg:ml-16">
@@ -146,10 +142,12 @@ const Orders = () => {
 
                 <td className="md:py-4 mdpx-2 flex items-center gap-2">
                   {order.products?.length > 0 && order.products[0]?.image ? (
-                    <img
+                    <Image
                       src={order.products[0].image}
                       alt={order.products[0]?.name || "Product Image"}
                       className="md:w-10 md:h-10 w-5 h-5 rounded-md"
+                      width={40}
+                      height={40}
                     />
                   ) : (
                     "N/A"
@@ -174,7 +172,7 @@ const Orders = () => {
                   <Link href={`/admin/orders/${order._id}`}>
                     <Eye className="md:w-5 w-3 md:h-5 h-3  cursor-pointer text-gray-600 hover:text-gray-900 " />
                   </Link>
-                  <Pencil className="md:w-5 w-3 md:h-5 h-3  cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(order._id)} />
+                  <Pencil className="md:w-5 w-3 md:h-5 h-3  cursor-pointer text-blue-600 hover:text-blue-900" />
                 </td>
               </tr>
             ))}

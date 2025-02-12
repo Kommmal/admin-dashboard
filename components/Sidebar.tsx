@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bell, User, ShoppingCart, Package, Truck, Settings, LayoutDashboard, Menu, ChevronDownIcon, List, ListIcon, Plus, PlusCircle, X } from "lucide-react";
+import {  User, ShoppingCart, Package,  Settings, LayoutDashboard, Menu, ChevronDownIcon,  ListIcon,  PlusCircle, X } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from "@/public/images/main-logo-black-transparent.png";
@@ -12,7 +12,6 @@ import LogoutButton from './LogoutButton';
 const Sidebar = () => {
   const pathname = usePathname(); // Get the current pathname
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
-  const [show, setShow] = useState(false)
   const [isProductClicked, setIsProductClicked] = useState(false)
 
   const toggleSidebar = () => {

@@ -93,13 +93,7 @@ const ProductTable = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  const handleView = (product: Product) => {
-    console.log("Viewing product:", product);
-  };
 
-  const handleEdit = (product: Product) => {
-
-  };
 
   const handleDelete = async (productId: string) => {
     try {
@@ -223,7 +217,7 @@ const ProductTable = () => {
                   <Link href={`/admin/products/${product.slug}`}>
                     <Eye className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-gray-600 hover:text-gray-900" />
                   </Link>
-                  <Pencil className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-blue-600 hover:text-blue-900" onClick={() => handleEdit(product)} />
+                  <Pencil className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-blue-600 hover:text-blue-900" />
                   <Trash
                     className="md:w-5 md:h-5 h-3 w-3 cursor-pointer text-red-600 hover:text-red-900"
                     onClick={() => handleDelete(product._id)}

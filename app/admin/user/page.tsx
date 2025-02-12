@@ -1,8 +1,6 @@
 "use client"
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { clerkClient } from "@clerk/clerk-sdk-node";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 import { ChevronDownIcon, Search } from "lucide-react";

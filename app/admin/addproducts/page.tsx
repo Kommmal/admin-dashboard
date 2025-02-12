@@ -6,6 +6,7 @@ import { Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { ChevronDownIcon } from "lucide-react";
 import { client } from "@/sanity/lib/client";
+import Image from "next/image";
 
 interface Product {
   name: string;
@@ -60,8 +61,6 @@ const AddProducts = () => {
   const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const availableTags = ["newarrivals", "topselling", "bestselling"];
 
 
 
@@ -183,7 +182,7 @@ const AddProducts = () => {
             <h1 className='md:text-3xl text-xl font-semibold md:font-semibold'>Media</h1>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center flex flex-col items-center justify-center w-full max-w-full bg-gray-50 hover:bg-gray-100 transition">
               {imagePreview ? (
-                <img src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" />
+                <Image src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" width={80} height={80} />
               ) : (
                 <>
                   <ImageIcon className="w-10 h-10 mb-2" />

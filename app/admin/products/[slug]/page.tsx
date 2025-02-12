@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { client } from "@/sanity/lib/client";
 import { Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 interface Product {
     _id: string;
@@ -149,7 +150,7 @@ const EditProduct = () => {
                     <div className="bg-white flex flex-col justify-center items-center gap-4 border border-gray-100 rounded-lg px-4 py-8">
                         <h1 className="text-2xl font-semibold">Media</h1>
                         {imagePreview ? (
-                            <img src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" />
+                            <Image src={imagePreview} alt="Uploaded" className="w-20 h-30 rounded-lg" width={80} height={80} />
                         ) : (
                             <>
                                 <ImageIcon className="w-10 h-10" />

@@ -164,10 +164,12 @@ const OrderDetail = () => {
                             <tr key={index} className="text-center border-b border-gray-300">
                                 <td className="py-4 px-2 flex items-center gap-2">
                                     {product.image ? (
-                                        <img
+                                        <Image
                                             src={product.image}
                                             alt={product.name || "Product Image"}
                                             className="w-10 h-10 rounded-md"
+                                            width={40}
+                                            height={40}
                                         />
                                     ) : (
                                         "N/A"
