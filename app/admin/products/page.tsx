@@ -29,7 +29,6 @@ const ProductTable = () => {
   const [filterCategory, setFilterCategory] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [filterStock, setFilterStock] = useState<string>("");
-  const [filterPrice, setFilterPrice] = useState<number | null>(null);
   const [filterDateRange, setFilterDateRange] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const productsPerPage: number = 10;
@@ -80,7 +79,7 @@ const ProductTable = () => {
         (filterStatus === "Low Stock" && product.stock > 0 && product.stock <= 5))
       &&
       (!filterStock || (filterStock === "Low Stock" ? product.stock < 5 : product.stock === 0)) &&
-      (!filterPrice || product.price <= filterPrice) &&
+      
       dateCondition
     );
   });

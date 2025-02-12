@@ -40,14 +40,14 @@ export function OrderStatusPieChart() {
     });
 
     return Object.entries(statusCounts)
-      .filter(([_, count]) => count > 0) // Remove statuses with zero count
-      .map(([status, count]) => ({
-        name: status,
-        value: count,
-        fill: COLORS[status],
-      }));
-  };
-
+  .filter((entry) => entry[1] > 0) // Only checking count
+  .map(([status, count]) => ({
+    name: status,
+    value: count,
+    fill: COLORS[status],
+  }));
+  }
+  
   const chartData = getStatusData();
 
   return (

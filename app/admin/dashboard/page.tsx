@@ -47,7 +47,7 @@ export default function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [topSellingProducts, setTopSellingProducts] = useState<TopSelling[]>([]);
   const [orderLength, setOrderLength] = useState<number>(0);
-  const [filter, setFilter] = useState("Today");
+  const filter = "Today"
  
 
   useEffect(() => {
