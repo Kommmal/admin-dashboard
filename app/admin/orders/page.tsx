@@ -80,7 +80,7 @@ const Orders = () => {
       return data;
     }
   };
-  const filteredData = useMemo(() => filterData(filter), [filter, data]);
+  const filteredData = useMemo(() => filterData(filter), [filter, data, filterData]);
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const currentOrders = filteredData.slice(indexOfFirstOrder, indexOfLastOrder);

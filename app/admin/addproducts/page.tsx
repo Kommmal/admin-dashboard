@@ -33,8 +33,8 @@ async function uploadImageToSanity(imageFile: File): Promise<string> {
     console.log("✅ Image uploaded:", asset);
     return asset._id;
   } catch (error) {
-    console.error("❌ Image upload failed:", error);
-    throw error;
+    console.error("❌ Error adding product:", error);
+    alert(`Failed to add product. Error: ${error}`);
   }
 }
 
@@ -112,7 +112,7 @@ const AddProducts = () => {
         try {
           imageRef = await uploadImageToSanity(product.image);
         } catch (error) {
-          console.error("❌ Error adding product");
+          console.error("❌ Error adding product",  error);
           alert("❌ Failed to upload image. Please try again.");
           setLoading(false);
           return;
