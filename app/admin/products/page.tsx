@@ -110,9 +110,15 @@ const ProductTable = () => {
   
       const data = await res.json();
       setAlerts({ type: "success", message: " Product deleted successfully!" });
+      setTimeout(() => {
+        setAlerts(null);
+      }, 3000); 
       console.log("Product deleted:", data);
     } catch (error) {
       setAlerts({ type: "failure", message: " Failed to delete product. Please try again." });
+      setTimeout(() => {
+        setAlerts(null);
+      }, 3000); 
       console.error("Delete error:", error);
     }
   };
