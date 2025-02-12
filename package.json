@@ -33,6 +33,7 @@
     "react-dom": "^18",
     "recharts": "^2.15.1",
     "sanity": "^3.72.1",
+    "sharp": "^0.33.5",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
