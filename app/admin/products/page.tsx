@@ -4,8 +4,7 @@ import { client } from "@/sanity/lib/client";
 import { ChevronDownIcon, Eye, Pencil, Trash } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
-
-
+import Alert from "@/components/SuccessFailer"; 
 
 
 interface Product {
@@ -31,6 +30,7 @@ const ProductTable = () => {
   const [filterStock, setFilterStock] = useState<string>("");
   const [filterDateRange, setFilterDateRange] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [alerts, setAlerts] = useState<{ type: "success" | "failure"; message: string } | null>(null); 
   const productsPerPage: number = 10;
 
   useEffect(() => {
@@ -109,10 +109,10 @@ const ProductTable = () => {
       }
   
       const data = await res.json();
-      alert("Product deleted")
+      setAlerts({ type: "success", message: " Product deleted successfully!" });
       console.log("Product deleted:", data);
     } catch (error) {
-      alert("Delete error")
+      setAlerts({ type: "failure", message: " Failed to delete product. Please try again." });
       console.error("Delete error:", error);
     }
   };
@@ -177,6 +177,7 @@ const ProductTable = () => {
           </select>
         </div>
       )}
+         {alerts && <Alert type={alerts.type} message={alerts.message} />} 
       <div className="w-full overflow-auto bg-white md:m-2  rounded-lg shadow-lg ">
         <table className="min-w-full border-collapse border-2 border-gray-200 rounded-lg  md:text-sm  text-[8px] text-nowrap">
           <thead>
