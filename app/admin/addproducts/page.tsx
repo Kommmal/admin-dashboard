@@ -112,6 +112,7 @@ const AddProducts = () => {
         try {
           imageRef = await uploadImageToSanity(product.image);
         } catch (error) {
+          console.error("❌ Error adding product");
           alert("❌ Failed to upload image. Please try again.");
           setLoading(false);
           return;
