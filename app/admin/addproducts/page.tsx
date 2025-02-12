@@ -7,6 +7,8 @@ import Link from "next/link";
 import { ChevronDownIcon } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
+import Alert from "@/components/SuccessFailer"; 
+
 
 interface Product {
   name: string;
@@ -61,6 +63,7 @@ const AddProducts = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
+  const [alerts, setAlerts] = useState<{ type: "success" | "failure"; message: string } | null>(null); 
   const router = useRouter();
 
 
@@ -139,11 +142,17 @@ const AddProducts = () => {
       };
 
       await client.create(newProduct);
-      alert("✅ Product added successfully!");
-      router.push("/admin/products");
+      setAlerts({ type: "success", message: " Product added successfully!" });
+
+      setTimeout(() => {
+        setAlerts(null);
+        router.push("/admin/products");
+      }, 3000); 
     } catch (error) {
       console.error("❌ Error adding product:", error);
-      alert("Failed to add product. Please try again.");
+      setAlerts({ type: "failure", message: " Failed to add product. Please try again." });
+
+      setTimeout(() => setAlerts(null), 3000); 
     } finally {
       setLoading(false);
     }
@@ -163,6 +172,7 @@ const AddProducts = () => {
         </div>
 
       </div>
+      {alerts && <Alert type={alerts.type} message={alerts.message} />} 
       <form onSubmit={handleSubmit} className="flex lg:flex-row flex-col gap-5">
         <div className='flex flex-col gap-4 lg:w-[70%]'>
           <div className='bg-white flex flex-col gap-4 border border-gray-100 rounded-lg px-4 py-8 '>
