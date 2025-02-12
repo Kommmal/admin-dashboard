@@ -5,15 +5,16 @@ import { Bell, User, ShoppingCart, Package, Truck, Settings, LayoutDashboard, Me
 import Link from 'next/link';
 import Image from 'next/image';
 import Logo from "@/public/images/main-logo-black-transparent.png";
-import UserSettings from './UserSettings';
-import { useSession, signOut } from "next-auth/react";
+import LogoutButton from './LogoutButton';
+
+
 
 const Sidebar = () => {
   const pathname = usePathname(); // Get the current pathname
   const [isHamburgerClicked, setIsHamburgerClicked] = useState(false);
   const [show, setShow] = useState(false)
   const [isProductClicked, setIsProductClicked] = useState(false)
-  const { data: session, status } = useSession();
+
   const toggleSidebar = () => {
     setIsHamburgerClicked((prevState) => !prevState);
   };
@@ -68,20 +69,19 @@ const Sidebar = () => {
               <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Add Product</span>
             </Link>
           </div>
-          <Link href="/admin/user" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
+          <Link href="/admin/user" className="flex items-center space-x-3 hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
             <User size={18} />
             <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Customers</span>
           </Link>
-          {session?.user && (
-            <Link href="" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
-              <Settings size={18} />
-              <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>
-                <button onClick={() => signOut({ callbackUrl: "/" })} className="block w-full px-4 py-2 text-left ">
-                  Logout
-                </button>
-              </span>
-            </Link>
-          )}
+
+          <div className="flex items-center space-x-3 hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors cursor-pointer">
+            <Settings size={18} />
+            <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>
+              <LogoutButton />
+            </span>
+          </div>
+
+
 
         </div>
       </div>

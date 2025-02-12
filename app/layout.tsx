@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
-import SessionProvider from "@/components/SessionProvider";
+import { AuthProvider } from "@/components/AuthProvider";
+
 
 
 
@@ -35,15 +36,14 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SessionProvider>
+          <AuthProvider>
             <div>
               <div className=" w-full">
                 <Sidebar />
               </div>
               <div className="w-auto ">{children}</div>
             </div>
-          </SessionProvider>
-
+          </AuthProvider>
         </body>
       </html>
     </ClerkProvider>

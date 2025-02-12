@@ -6,6 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { ChevronDownIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import Loader from "@/app/Loader/page";
 
 interface Product {
     name: string;
@@ -70,9 +71,9 @@ const OrderDetail = () => {
         fetchOrder();
     }, [orderId]);
 
-    if (!order) return <div>Loading...</div>;
+    if (!order) return <div><Loader /></div>;
 
-    return (
+    return  (
         <div className="overflow-x-hidden min-h-screen flex flex-col gap-6 p-6 bg-gray-100 w-auto lg:ml-16">
             <div className="flex flex-col gap-2">
                 <h1 className="md:text-3xl text-2xl md:font-bold font-bold">Order Detail</h1>

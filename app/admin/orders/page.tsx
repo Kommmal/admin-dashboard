@@ -95,7 +95,7 @@ const Orders = () => {
 
   return (
     <div className="overflow-x-hidden min-h-screen  flex flex-col gap-4 md: px-3 py-6 bg-gray-100 w-auto lg:ml-16">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 md:gap-2">
         <div className="flex justify-between">
           <h1 className="lg:text-3xl text-2xl md:font-bold font-bold">Orders</h1>
           <div className="flex gap-2 md:hidden">
@@ -112,7 +112,7 @@ const Orders = () => {
           </Link>
         </div>
       </div>
-      <div className={`flex md:flex-nowrap flex-wrap gap-2 lg:gap-4 md:gap-4 mb-4 bg-white border-2 border-gray-100 rounded-md lg:w-[73%] xl:w-[51%] p-2 ${show ? "block" : "hidden"} md:block md:text-sm text-xs`}>
+      <div className={`flex md:flex-nowrap flex-wrap gap-2 lg:gap-4 md:gap-4 mb-4 bg-white border-2 border-gray-100 rounded-md lg:w-[73%] xl:w-[46%] p-2 ${show ? "block" : "hidden"} md:flex md:text-sm text-xs`}>
         {["All", "Today", "7 Days", "24 Hours", "This Month", "This Year"].map((option) => (
           <button
             key={option}
@@ -161,7 +161,7 @@ const Orders = () => {
                 <td className="md:py-4 md:px-2">${order.total}</td>
                 <td className="md:py-4 md:px-2">{order.paymentMethod}</td>
                 <td className="md:py-4 md:px-2">
-                  <span className={`md:py-4 md:px-2 py-1 rounded-xl md:text-sm text-[8px] ${order.status === "Completed" ? "bg-green-100 text-green-600" :
+                  <span className={`md:py-2 md:px-2 px-2 py-1 rounded-xl md:text-sm text-[8px] ${order.status === "Completed" ? "bg-green-100 text-green-600" :
                     order.status === "Pending" ? "bg-yellow-100 text-yellow-600 " :
                       order.status === "Cancelled" ? "bg-red-100 text-red-600" :
                         "bg-gray-100 text-gray-600"

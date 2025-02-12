@@ -9,8 +9,7 @@ import Dollar from "@/public/images/Annual Goal.png";
 import Truck from "@/public/images/Services.png";
 import Order from "@/public/images/Services (2).png";
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import UserSettings from "@/components/UserSettings";
+
 
 
 interface Product {
@@ -51,8 +50,7 @@ export default function Dashboard() {
   const [orderLength, setOrderLength] = useState<number>(0);
   const [filter, setFilter] = useState("Today");
   const [barFilter, setBarFilter] = useState("Today");
-  const { data: session, status } = useSession();
-  const router = useRouter();
+ 
   
 
   useEffect(() => {
@@ -136,11 +134,6 @@ export default function Dashboard() {
   }, [orders, filter]);
 
 
-  if (status === "loading") return <p>Loading...</p>;
-  if (!session) {
-    router.push("/");
-    return null;
-  }
 
   return (
     <div className=" w-auto lg:ml-16 p-6 overflow-x-hidden">

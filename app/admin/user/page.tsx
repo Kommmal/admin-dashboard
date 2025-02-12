@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { client } from "@/sanity/lib/client";
 import Image from "next/image";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Search } from "lucide-react";
+import Loader from "@/app/Loader/page";
 
 interface Order {
   _id: string;
@@ -16,8 +17,7 @@ interface User {
   id: string;
   firstName: string;
   lastName: string;
-  emailAddresses: string[];
-  emailAddress: string[];
+  emailAddresses: { emailAddress: string }[];
   banned: boolean;
   locked: boolean;
   orderQuantity: number;
@@ -70,11 +70,14 @@ const UsersTable = () => {
   }).filter(user => user.firstName?.toLowerCase().includes(search.toLowerCase()))
     .slice(indexOfFirstUser, indexOfLastUser);
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
+    
     <div className="overflow-x-hidden px-3 py-6 bg-gray-100 min-h-screen w-auto lg:ml-16">
       <div className="flex md:justify-between md:flex-row flex-col gap-3 md:items-center mb-4">
         <h2 className="md:text-2xl text-left text-xl font-bold">Customer List</h2>
-        <div className="flex md:space-x-2 space-x-3">
+        <div className="flex md:space-x-2 space-x-3 relative">
           <Input
             type="text"
             placeholder="Search customer..."
@@ -82,42 +85,44 @@ const UsersTable = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="border p-2 rounded md:text-sm text:xs"
           />
-          <Button className="bg-black text-white px-4 py-2 rounded md:text-sm text:xs">+ Add Customer</Button>
+          <Search size={22} className="absolute right-3 top-2" color="grey" />
         </div>
       </div>
-      {loading ? (
-        <p>Loading users...</p>
-      ) : (
-        <div className="w-full overflow-auto bg-white md:m-4 rounded-lg shadow-lg ">
-          <table className="w-full bg-white shadow-md rounded-lg xl:text-sm md:text-xs text-[8px] text-nowrap">
-            <thead>
-              <tr className="bg-gray-200 text-center">
-                <th className="md:py-4 md:px-2 p-2">Customer Name</th>
-                <th className="md:py-4 md:px-2 pl-6 py-2 pr-2">Email</th>
-                <th className="md:py-4 md:px-2 p-2">Orders</th>
-                <th className="md:py-4 md:px-2 p-2">Balance</th>
-                <th className="md:py-4 md:px-2 p-2">Status</th>
-                <th className="md:py-4 md:px-2 p-2">Created</th>
+
+      <div className="w-full overflow-auto bg-white md:m-2 rounded-lg shadow-lg ">
+        <table className=" w-full bg-white shadow-md rounded-lg xl:text-sm md:text-xs text-[8px] text-nowrap">
+          <thead>
+            <tr className="bg-gray-200 text-center">
+              <th className="md:py-4 md:px-2 p-2">Customer Name</th>
+              <th className="md:py-4 md:px-2 pl-6 py-2 pr-2">Email</th>
+              <th className="md:py-4 md:px-2 p-2">Orders</th>
+              <th className="md:py-4 md:px-2 p-2">Balance</th>
+              <th className="md:py-4 md:px-2 p-2">Status</th>
+              <th className="md:py-4 md:px-2 p-2">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.map((user) => (
+              <tr key={user.id} className="border-b text-center">
+                <td className="md:py-4 md:px-2 p-2 flex gap-2 items-center">
+                  <Image alt="userImage" src={user.imageUrl} height={30} width={40} className="rounded-full md:w-10 md:h-10 w-5 h-5 " />
+                  {user.firstName} {user.lastName}
+                </td>
+                <td className="md:py-4 md:px-2 p-2 pl-10">{user.emailAddresses?.[0]?.emailAddress || "N/A"}</td>
+                <td className="md:py-4 md:px-2 p-2">{user.orderQuantity}</td>
+                <td className="md:py-4 md:px-2 p-2">${(Math.random() * 1000).toFixed(2)}</td>
+                <td className="p-3">
+                  <span className={`inline-block px-2 py-1 rounded-lg ${user.status === "Active" ? 'bg-green-500 text-white' : 'bg-red-500 text-white rounded'}`}>
+                    {user.status}
+                  </span>
+                </td>
+
+                <td className="md:py-4 md:px-2 p-2">{new Date().toLocaleDateString()}</td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b text-center">
-                  <td className="md:py-4 md:px-2 p-2 flex gap-2 items-center">
-                    <Image alt="userImage" src={user.imageUrl} height={30} width={40} className="rounded-full md:w-10 md:h-10 w-5 h-5 " />
-                    {user.firstName} {user.lastName}
-                  </td>
-                  <td className="md:py-4 md:px-2 p-2 pl-10">{user.emailAddresses?.[0]?.emailAddress || "N/A"}</td>
-                  <td className="md:py-4 md:px-2 p-2">{user.orderQuantity}</td>
-                  <td className="md:py-4 md:px-2 p-2">${(Math.random() * 1000).toFixed(2)}</td>
-                  <td className={`p-3 ${user.status === "Active" ? 'bg-green-500 text-white px-2 py-1' : 'bg-red-500 text-white px-2 py-1 rounded'}`}>{user.status}</td>
-                  <td className="md:py-4 md:px-2 p-2">{new Date().toLocaleDateString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="mt-4 flex justify-between items-center">
         <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='bg-black px-4 py-2 border-2 rounded-md text-white md:block hidden'>Previous</button>
         <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='bg-black px-4 py-2 border-2 rounded-md text-white md:hidden block'>
@@ -137,6 +142,7 @@ const UsersTable = () => {
 
     </div>
   );
+
 };
 
 export default UsersTable;
