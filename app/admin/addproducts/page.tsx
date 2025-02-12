@@ -58,7 +58,7 @@ const AddProducts = () => {
   });
 
 
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
   const router = useRouter();

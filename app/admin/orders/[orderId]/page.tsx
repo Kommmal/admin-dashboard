@@ -187,7 +187,7 @@ const OrderDetail = () => {
                     </tbody>
                     <tfoot>
                         <tr className="text-center font-semibold  border-b border-gray-300">
-                            <td colSpan="5"></td> {/* Leaves first 5 columns empty */}
+                            <td colSpan={5}></td> {/* Leaves first 5 columns empty */}
                             <td className="py-4 px-2">Subtotal</td>
                             <td className="py-4 px-2">${order.products.reduce((acc, product) => acc + product.price * product.quantity, 0).toFixed(2)}</td>
                         </tr>
