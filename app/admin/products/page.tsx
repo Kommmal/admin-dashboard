@@ -5,6 +5,8 @@ import { ChevronDownIcon, Eye, Pencil, Trash } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
 import Alert from "@/components/SuccessFailer"; 
+import { useRouter } from "next/navigation";
+
 
 
 interface Product {
@@ -32,6 +34,7 @@ const ProductTable = () => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [alerts, setAlerts] = useState<{ type: "success" | "failure"; message: string } | null>(null); 
   const productsPerPage: number = 10;
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,12 +115,14 @@ const ProductTable = () => {
       setAlerts({ type: "success", message: " Product deleted successfully!" });
       setTimeout(() => {
         setAlerts(null);
+        router.push("/admin/products");
       }, 3000); 
       console.log("Product deleted:", data);
     } catch (error) {
       setAlerts({ type: "failure", message: " Failed to delete product. Please try again." });
       setTimeout(() => {
         setAlerts(null);
+        router.push("/admin/products");
       }, 3000); 
       console.error("Delete error:", error);
     }
