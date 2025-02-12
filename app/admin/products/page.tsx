@@ -109,8 +109,10 @@ const ProductTable = () => {
       }
   
       const data = await res.json();
+      alert("Product deleted")
       console.log("Product deleted:", data);
     } catch (error) {
+      alert("Delete error")
       console.error("Delete error:", error);
     }
   };
