@@ -35,6 +35,7 @@ async function uploadImageToSanity(imageFile: File): Promise<string> {
   } catch (error) {
     console.error("❌ Error adding product:", error);
     alert(`Failed to add product. Error: ${error}`);
+    return "";
   }
 }
 
