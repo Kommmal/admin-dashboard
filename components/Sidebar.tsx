@@ -42,7 +42,7 @@ const Sidebar = () => {
         <div className="menu space-y-4">
           <Link href="/admin/dashboard" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
             <LayoutDashboard size={18} />
-            <span className={`${isHamburgerClicked ? 'block' : 'hidden'}`}>Dashboard</span>
+            <span className={`${isHamburgerClicked ? 'block' : 'hidden'} ${isProductClicked? isHamburgerClicked : !isHamburgerClicked}`}>Dashboard</span>
           </Link>
           <Link href="/admin/orders" className="flex items-center space-x-3  hover:bg-black hover:text-white py-3 rounded-lg px-2 transition-colors">
             <ShoppingCart size={18} />
